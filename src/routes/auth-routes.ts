@@ -1,7 +1,8 @@
-import { NextFunction, Request, Response, Router } from 'express';
+  import { NextFunction, Request, Response, Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
 import User from '../models/users';
+import { UserJwtPayload } from '../utilities/app';
 const router: Router = Router();
 
 // SIGN UP
@@ -25,7 +26,7 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
     });
     user = await user.save();
     res.json(user);
-  } catch (e) {
+  } catch (e: any) {
     res.status(500).json({ error: e.message });
   }
 });
@@ -37,6 +38,7 @@ router.post("/signin", async (req: Request, res: Response, next: NextFunction) =
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
+    console.log(user)
     if (!user) {
       return res
         .status(400)
@@ -49,8 +51,8 @@ router.post("/signin", async (req: Request, res: Response, next: NextFunction) =
     }
 
     const token = jwt.sign({ id: user._id }, "passwordKey");
-    res.json({ token, ...user._doc });
-  } catch (e) {
+    res.json({ token, ...user?._doc });
+  } catch (e: any) {
     res.status(500).json({ error: e.message });
   }
 });
@@ -59,13 +61,13 @@ router.post("/tokenIsValid", async (req, res) => {
   try {
     const token = req.header("x-auth-token");
     if (!token) return res.json(false);
-    const verified = jwt.verify(token, "passwordKey");
+    const verified : string | jwt.JwtPayload | UserJwtPayload  = jwt.verify(token, "passwordKey");
     if (!verified) return res.json(false);
 
-    const user = await User.findById(verified.id);
+    const user = await User.findById(verified);
     if (!user) return res.json(false);
     res.json(true);
-  } catch (e) {
+  } catch (e: any) {
     res.status(500).json({ error: e.message });
   }
 });

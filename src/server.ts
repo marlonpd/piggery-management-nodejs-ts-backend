@@ -10,12 +10,3 @@ app
   .on('error', (e) => console.error(e));
 
 
-//console.log(app._router);
-
-
-app._router.stack.forEach(function(r){
-  console.log(r)
-  if (r.Layer && r.Layer.path){
-    console.log(r.Layer.path)
-  }
-})
