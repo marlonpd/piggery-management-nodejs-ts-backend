@@ -8,7 +8,19 @@ export interface IUser extends Document {
 }
 
 const UserSchema: Schema = new Schema({
-  email: { type: String, required: true, unique: true },
+  email: { 
+    required: true,
+    type: String,
+    trim: true,
+    validate: {
+      validator: (value: any) => {
+        const re =
+          /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        return value.match(re);
+      },
+      message: "Please enter a valid email address",
+    },
+  },
   name: { type: String, required: true },
   password: { type: String, required: true },
 });
