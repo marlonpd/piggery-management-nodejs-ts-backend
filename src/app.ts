@@ -8,8 +8,10 @@ dotenv.config();
 const app: Express = express();
 
 app.use('/api', MainRouter);
-
-mongoose.connect('mongodb+srv://marlonpddev:ZLh9sdvMOFda6hTz@cluster0.yllmlyb.mongodb.net/?retryWrites=true&w=majority').then((res)=>{
+const db_url : string = process.env.DB_URL ?? '';
+console.log(db_url)
+mongoose.connect(db_url).then((res)=>{
+  console.log(res)
   console.log('connection successufly');
 }).catch((e) => {
   console.log(e);
