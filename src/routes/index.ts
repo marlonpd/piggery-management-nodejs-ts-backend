@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { PigsRoutes } from './pigs-routes';
+import { LivestockRoutes } from './livestock-routes';
 
 const router: Router = Router();
 
-router.use('/pigs', PigsRoutes);
+router.use('/pigs', LivestockRoutes);
 
 export const MainRouter: Router = router;
