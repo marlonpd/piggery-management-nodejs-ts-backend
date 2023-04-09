@@ -1,8 +1,10 @@
-  import { NextFunction, Request, Response, Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
 import User from '../models/users';
 import { UserJwtPayload } from '../utilities/app';
+import type { JwtPayload } from "jsonwebtoken"
+
 const router: Router = Router();
 
 // SIGN UP
@@ -32,7 +34,6 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
 });
 
 // Sign In Route
-// Exercise
 router.post("/signin", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
@@ -61,10 +62,10 @@ router.post("/tokenIsValid", async (req, res) => {
   try {
     const token = req.header("x-auth-token");
     if (!token) return res.json(false);
-    const verified : string | jwt.JwtPayload | UserJwtPayload  = jwt.verify(token, "passwordKey");
+    const verified  = jwt.verify(token, "passwordKey") as JwtPayload;
     if (!verified) return res.json(false);
 
-    const user = await User.findById(verified);
+    const user = await User.findById(verified.id);
     if (!user) return res.json(false);
     res.json(true);
   } catch (e: any) {
