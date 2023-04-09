@@ -8,3 +8,14 @@ app
     console.log(`server running on port : ${APP_PORT}`);
   })
   .on('error', (e) => console.error(e));
+
+
+//console.log(app._router);
+
+
+app._router.stack.forEach(function(r){
+  console.log(r)
+  if (r.Layer && r.Layer.path){
+    console.log(r.Layer.path)
+  }
+})
