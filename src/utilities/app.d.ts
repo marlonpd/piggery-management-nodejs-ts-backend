@@ -12,3 +12,4 @@ export interface UserJwtPayload extends jwt.JwtPayload {
 }
 
 
+export type EntryType = "income" | "expenses";

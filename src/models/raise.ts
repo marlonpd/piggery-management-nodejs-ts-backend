@@ -8,9 +8,9 @@ export interface IRaise extends Document {
 }
 
 const RaiseSchema: Schema = new Schema({
-  email: { type: String, required: true, unique: true },
+  raise_type: { type: String, required: true},
   name: { type: String, required: true },
-  password: { type: String, required: true },
+  user: { type: Object, required: true },
 });
 
 export default mongoose.model<IRaise>('Raise', RaiseSchema);
