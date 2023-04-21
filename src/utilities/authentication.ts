@@ -1,7 +1,9 @@
 
-import { Request } from 'express';
+import { Request, NextFunction, Response } from 'express';
 const jwt =  require('express-jwt');
 import { JWT_SECRET } from "./secrets";
+import { IUser } from '../models/users';
+import { IGetUserAuthInfoRequest } from './app';
 
 
 function getTokenFromHeader(req: Request): string | null {
@@ -33,7 +35,7 @@ function splitToken(authString: string) {
   }
 }
 
-export const verifyJwt = async (req: Request) => {
+export const verifyJwt = async (req: Request) => {authentication
   // no token provided
   if (!req.headers.authorization) return null
 
@@ -49,7 +51,18 @@ export const verifyJwt = async (req: Request) => {
   }
 }
 
+export const authenticateToken = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+  if (token == null) return res.sendStatus(401)
 
+  jwt.verify(token, process.env.JWT_SECRET, (err: any, user: IUser) => {
+    console.log(err)
+    if (err) return res.sendStatus(403)
+    req.user = user
+    next()
+  })
+}
 
 const auth = {
   required: jwt({

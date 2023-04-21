@@ -1,22 +1,22 @@
 
 import { Request, Response, Router } from 'express';
-import { authentication } from '../utilities/authentication';
+import { authenticateToken, authentication } from '../utilities/authentication';
+import Raise, { IRaise } from '../models/raise';
+import { request } from 'http';
+
+import { IGetUserAuthInfoRequest } from '../utilities/app';
 
 const router: Router = Router();
 
 router.post('/', authentication.required, function (req: Request, res: Response, next) {
-  User.findById(req.payload.id).then(function (user) {
-    if (!user) {
-      return res.sendStatus(401);
-    }
 
-    const article = new Article(req.body.article);
+    let payload = {
+      raise_type : req.body.raise_type,
+      name : req.body.name,
+      user : req.payload.id,
+    };
 
-    article.author = user;
+    let new_raise = new Raise(payload); 
 
-    return article.save().then(function () {
-      console.log(article.author);
-      return res.json({article: article.toJSONFor(user)});
-    });
-  }).catch(next);
+
 });
