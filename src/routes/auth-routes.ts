@@ -34,24 +34,27 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
 });
 
 // Sign In Route
-router.post("/signin", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/signin1", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
+    console.log('user')
     console.log(user)
     if (!user) {
       return res
         .status(400)
         .json({ msg: "User with this email does not exist!" });
     }
-
+    
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ msg: "Incorrect password." });
     }
 
-    const token = jwt.sign({ id: user._id }, "passwordKey");
+    const secret = process.env.JWT_SECRET ?? '';  
+    console.log(secret)
+    const token = jwt.sign({ id: user._id }, secret);
     res.json({ token, ...user?._doc });
   } catch (e: any) {
     res.status(500).json({ error: e.message });
@@ -72,6 +75,22 @@ router.post("/tokenIsValid", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+router.get('/get',  function (req: Request, res: Response, next: NextFunction) {
+
+  console.log('getter');
+
+  // let payload = {
+  //   raise_type : req.body.raise_type,
+  //   name : req.body.name,
+  //   user : req.payload.id,
+  // };
+
+  // let new_raise = new Raise(payload); 
+
+
+});
+
 
 
 export const AuthRoutes: Router = router;

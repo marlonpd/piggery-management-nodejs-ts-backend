@@ -11,10 +11,19 @@ export interface UserJwtPayload extends jwt.JwtPayload {
   id: string 
 }
 
+export interface IGetUserAuthInfoRequest<ReqBody = { user: IUser; }> extends Request {};
 
-import { Request } from "express"
-export interface IGetUserAuthInfoRequest extends Request {
-  user: IUser
+// export interface IGetUserAuthInfoRequest extends Request {
+//   user: IUser
+// }
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: IUser
+  }
+  interface Response {
+    user?: IUser
+  }
 }
 
 export type EntryType = "income" | "expenses";

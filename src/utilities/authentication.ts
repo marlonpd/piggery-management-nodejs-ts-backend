@@ -1,9 +1,13 @@
 
 import { Request, NextFunction, Response } from 'express';
-const jwt =  require('express-jwt');
+//const jwt =  require('express-jwt');
+//import jwt from 'express-jwt';
 import { JWT_SECRET } from "./secrets";
 import { IUser } from '../models/users';
 import { IGetUserAuthInfoRequest } from './app';
+
+import jwt from 'jsonwebtoken';
+
 
 
 function getTokenFromHeader(req: Request): string | null {
@@ -35,28 +39,41 @@ function splitToken(authString: string) {
   }
 }
 
-export const verifyJwt = async (req: Request) => {authentication
-  // no token provided
-  if (!req.headers.authorization) return null
+// export const verifyJwt = async (req: Request) => {authentication
+//   // no token provided
+//   if (!req.headers.authorization) return null
 
-  // from "Token x123445xabcd" to "x123445xabcd"
-  const token = req.headers.authorization.split(' ').pop()
+//   // from "Token x123445xabcd" to "x123445xabcd"
+//   const token = req.headers.authorization.split(' ').pop() ?? ''
 
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET)
-    return decoded
-  } catch (err) {
-    console.error('Token Verification Failed')
-    return null
-  }
-}
+//   try {
+//     const decoded = jwt.verify(token, JWT_SECRET)
+//     return decoded
+//   } catch (err) {
+//     console.error('Token Verification Failed')
+//     return null
+//   }
+// }
 
-export const authenticateToken = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
+export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
+  const authHeader: string = req.headers['authorization']?.toString() ?? ''
+
+
+  console.log('authHeader: ' + authHeader)
+
+
+  const token = authHeader && authHeader?.split(' ')[1]
+
+
+  console.log('token: ' + token)
+
   if (token == null) return res.sendStatus(401)
 
-  jwt.verify(token, process.env.JWT_SECRET, (err: any, user: IUser) => {
+  const secret = process.env.JWT_SECRET ?? '';
+
+  console.log('secret: ' + secret)
+
+  jwt.verify(token, secret , (err: any, user: any) => {
     console.log(err)
     if (err) return res.sendStatus(403)
     req.user = user
@@ -64,23 +81,23 @@ export const authenticateToken = async (req: IGetUserAuthInfoRequest, res: Respo
   })
 }
 
-const auth = {
-  required: jwt({
-    credentialsRequired: true,
-    secret             : JWT_SECRET,
-    getToken           : getTokenFromHeader,
-    userProperty       : 'payload',
-    // @ts-ignore
-    algorithms         : ['HS256']
-  }),
+// const auth = {
+//   required: jwt({
+//     credentialsRequired: true,
+//     secret             : JWT_SECRET,
+//     getToken           : getTokenFromHeader,
+//     userProperty       : 'payload',
+//     // @ts-ignore
+//     algorithms         : ['HS256']
+//   }),
 
-  optional: jwt({
-    credentialsRequired: false,
-    secret             : JWT_SECRET,
-    getToken           : getTokenFromHeader,
-    userProperty       : 'payload',
-    algorithms         : ['HS256']
-  })
-};
+//   optional: jwt({
+//     credentialsRequired: false,
+//     secret             : JWT_SECRET,
+//     getToken           : getTokenFromHeader,
+//     userProperty       : 'payload',
+//     algorithms         : ['HS256']
+//   })
+// };
 
-export const authentication = auth;
+// export const authentication = auth;
