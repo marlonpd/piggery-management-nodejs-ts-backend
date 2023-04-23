@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
-import User from '../models/users';
+import User from '../models/user';
 import { UserJwtPayload } from '../utilities/app';
 import type { JwtPayload } from "jsonwebtoken"
 

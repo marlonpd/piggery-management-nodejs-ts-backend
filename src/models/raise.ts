@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { RaiseType } from './../utilities/constants';
-import { UserSchema } from './users';
+import { UserSchema } from './user';
 export interface IRaise extends Document {
   raise_type: RaiseType;
   name: string;
@@ -13,7 +13,10 @@ const RaiseSchema: Schema = new Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId, // here you set the author ID
     required: true
-  }
+  },
+},
+{
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 });
 
 export default mongoose.model<IRaise>('Raise', RaiseSchema);

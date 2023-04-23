@@ -1,14 +1,6 @@
 
 import { Request, NextFunction, Response } from 'express';
-//const jwt =  require('express-jwt');
-//import jwt from 'express-jwt';
-import { JWT_SECRET } from "./secrets";
-import { IUser } from '../models/users';
-import { IGetUserAuthInfoRequest } from './app';
-
 import jwt from 'jsonwebtoken';
-
-
 
 function getTokenFromHeader(req: Request): string | null {
 
@@ -57,21 +49,11 @@ function splitToken(authString: string) {
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
   const authHeader: string = req.headers['authorization']?.toString() ?? ''
-
-
-  console.log('authHeader: ' + authHeader)
-
-
   const token = authHeader && authHeader?.split(' ')[1]
-
-
-  console.log('token: ' + token)
 
   if (token == null) return res.sendStatus(401)
 
   const secret = process.env.JWT_SECRET ?? '';
-
-  console.log('secret: ' + secret)
 
   jwt.verify(token, secret , (err: any, user: any) => {
     console.log(err)
