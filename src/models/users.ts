@@ -25,6 +25,9 @@ const UserSchema: Schema = new Schema({
   password: { type: String, required: true },
 });
 
-export {UserSchema};
+
+UserSchema.set('autoIndex', true)
+
+export { UserSchema };
 
 export default mongoose.model<IUser>('User', UserSchema);
