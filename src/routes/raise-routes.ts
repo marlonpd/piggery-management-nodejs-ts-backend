@@ -2,7 +2,9 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { authenticateToken } from '../utilities/authentication';
 import Raise from '../models/raise';
-
+import { forEach } from 'lodash';
+import Livestock from '../models/livestock';
+import { conn } from '../utilities/connection';
 const router: Router = Router();
 
 
@@ -17,19 +19,46 @@ router.get('',  authenticateToken, async function (req: Request, res: Response, 
 
 router.post('/save',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
-    const _id =  req.user?.id;
-
-    const payload = {
-      raise_type : req.body.raise_type,
-      name : req.body.name,
-      user : _id,
-    };
-
-    let raise = new Raise(payload); 
+    const session = await conn.startSession();
     
-    await raise.save();
+    try {
+        const _id =  req.user?.id;
+        const raise_no = Number(req.body.raise_no);
 
-    res.json(raise);
+        const payload = {
+          raise_type : req.body.raise_type,
+          name : req.body.name,
+          user : _id,
+        };
+
+        let raise = new Raise(payload); 
+        
+        await raise.save();
+
+        let ls = [];
+
+        for (let i = 0; i < raise_no; i++ ) {
+          ls.push({
+            name : req.body.name,
+            raise_id : raise._id,
+            weight : null,
+            birth_date : null,
+          });
+        }
+
+        const lss = new Livestock(ls);
+        await lss.save();
+
+        await session.commitTransaction();
+
+        res.json(raise);
+
+    } catch (e :any) {
+
+      console.log(e);
+      await session.abortTransaction();
+    }
+    
 });
 
 router.post('/update',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {

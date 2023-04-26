@@ -10,7 +10,7 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema({
   email: { 
     required: true,
-    type: String,
+    type: Schema.Types.String,
     trim: true,
     validate: {
       validator: (value: any) => {
@@ -21,8 +21,8 @@ const UserSchema: Schema = new Schema({
       message: "Please enter a valid email address",
     },
   },
-  name: { type: String, required: true },
-  password: { type: String, required: true },
+  name: { type: Schema.Types.String, required: true },
+  password: { type: Schema.Types.String, required: true },
 },
 {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },

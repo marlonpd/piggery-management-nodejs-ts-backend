@@ -14,9 +14,9 @@ const AccountingSchema: Schema = new Schema({
       type: mongoose.Schema.Types.ObjectId, 
       required: true
     },
-    description: { type: String, required: true },
-    entry_type: { type: String, required: false },
-    amount: { type: Number, required: false },
+    description: { type: Schema.Types.String, required: true },
+    entry_type: { type: Schema.Types.String, required: false },
+    amount: { type: Schema.Types.String, required: false },
   }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 });

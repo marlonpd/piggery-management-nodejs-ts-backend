@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { RaiseType } from './../utilities/constants';
-import { UserSchema } from './user';
 export interface IRaise extends Document {
   raise_type: RaiseType;
   name: string;
@@ -9,9 +8,9 @@ export interface IRaise extends Document {
 
 const RaiseSchema: Schema = new Schema({
   raise_type: { type: String, required: true},
-  name: { type: String, required: true },
+  name: { type: Schema.Types.String, required: true },
   user: {
-    type: mongoose.Schema.Types.ObjectId, // here you set the author ID
+    type: Schema.Types.ObjectId,
     required: true
   },
 },

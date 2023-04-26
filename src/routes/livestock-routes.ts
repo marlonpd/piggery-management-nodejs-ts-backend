@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { authenticateToken } from '../utilities/authentication';
-import Livestock from '../models/livestock';
+import Livestock, { ILivestock } from '../models/livestock';
 
 const router: Router = Router();
 
@@ -17,7 +17,9 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
 
     const payload = {
       name : req.body.name,
-      riase_id : req.body?.raise_id,
+      raise_id : req.body?.raise_id,
+      weight : req.body?.weight,
+      birth_date : req.body?.weight,
     };
 
     let raise = new Livestock(payload); 

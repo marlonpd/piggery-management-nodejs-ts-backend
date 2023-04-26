@@ -14,7 +14,7 @@ const LivestockSchema: Schema = new Schema({
       type: mongoose.Schema.Types.ObjectId, 
       required: true
     },
-    name: { type: String, required: true },
+    name: { type: Schema.Types.String, required: true },
     weight: { type: Number, required: false },
     birth_date: { type: Date, required: false },
   }, {
