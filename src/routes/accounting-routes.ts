@@ -16,8 +16,10 @@ router.get('',  authenticateToken, async function (req: Request, res: Response, 
 router.post('/save',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
     const payload = {
-      name : req.body.name,
-      riase_id : req.body?.raise_id,
+      raise_id: req.body.raise_id,
+      description: req.body.description,
+      entry_type: req.body.entry_type,
+      amount: Number(req.body.amount),
     };
 
     let entry = new Accounting(payload); 
@@ -32,9 +34,9 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
   const filter = { _id  : req.body.id};
    
   const update = {
-    name : req.body.name,
-    birdate : req.body.birth_date,
-    weight : req.body.weight,
+    description: req.body.description,
+    entry_type: req.body.entry_type,
+    amount: Number(req.body.amount),
   };
 
   const entry = await Accounting.findOneAndUpdate(filter, update, {

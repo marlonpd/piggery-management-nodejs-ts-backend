@@ -2,7 +2,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { authenticateToken } from '../utilities/authentication';
 import Raise from '../models/raise';
-import { forEach } from 'lodash';
 import Livestock from '../models/livestock';
 import { conn } from '../utilities/connection';
 const router: Router = Router();
