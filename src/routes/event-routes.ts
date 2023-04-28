@@ -1,23 +1,73 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { authenticateToken } from '../utilities/authentication';
 import Event from '../models/event';
+import Raise from '../models/raise';
+import { Types } from 'mongoose';
 
 const router: Router = Router();
 
 router.get('',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
-  const raise_id =  req.params.raise_id;
+  const raise_id =  req.query.raise_id?.toString();
 
-  const entries =await  Event.find({raise_id}); 
+  if (!raise_id) {
+    res.status(400).json('Raise id is required.');
+    return;
+  }
+
+  if (!Types.ObjectId.isValid(raise_id)) {
+    res.status(400).json('Invalid raise id.');
+    return;
+  }
+
+  let raise = await Raise.findOne({_id: raise_id});
+
+  if (!raise) {
+    res.status(400).json('Raise id not found.');
+    return;
+  }
+
+  const vents =await  Event.find({raise_id}); 
     
-  res.json(entries);
+  res.json(vents);
 });
 
 router.post('/save',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
+    const raise_id = req.body.raise_id;
+    const title = req.body.title;
+    const event_date = req.body.event_date;
+
+    if (!raise_id) {
+      res.status(400).json('Raise id is required');
+      return;
+    }
+
+    if (!Types.ObjectId.isValid(raise_id)) {
+      res.status(400).json('Invalid raise id.');
+      return;
+    }  
+
+    let raise = await Raise.findOne({_id: raise_id});
+
+    if (!raise) {
+      res.status(400).json('Raise id not found.');
+      return;
+    }
+
+    if (!title) {
+      res.status(400).json('Title is required');
+      return;
+    }
+
+    if (!event_date) {
+      res.status(400).json('Event date is required');
+      return;
+    }
 
     const payload = {
-      name : req.body.name,
-      riase_id : req.body?.raise_id,
+      title : title,
+      event_date: new Date(event_date),
+      riase_id : raise_id,
     };
 
     let entry = new Event(payload); 
@@ -29,12 +79,39 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
 
 router.post('/update',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
-  const filter = { _id  : req.body.id};
+
+  const title = req.body.title;
+  const event_date = req.body.event_date;
+
+  if (!title) {
+    res.status(400).json('Title is required');
+    return;
+  }
+
+  if (!event_date) {
+    res.status(400).json('Event date is required');
+    return;
+  }
+
+  const event_id = req.body.node_id;
+
+  if (!Types.ObjectId.isValid(event_id)) {
+    res.status(400).json('Invalid Event id.');
+    return;
+  }  
+
+  let event = await Event.findOne({_id: event_id});
+
+  if (!event) {
+    res.status(400).json('Event id not found.');
+    return;
+  }
+
+  const filter = { _id  : event_id};
    
   const update = {
-    name : req.body.name,
-    birdate : req.body.birth_date,
-    weight : req.body.weight,
+    title: title,
+    event_date: new Date(event_date),
   };
 
   const entry = await Event.findOneAndUpdate(filter, update, {
@@ -46,11 +123,23 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
 
 router.post('/delete',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
-  const id =  req.body.id;
-   
-  await Event.deleteOne({_id: id});
+  const event_id = req.body.node_id;
 
-  res.json('deleted');
+  if (!Types.ObjectId.isValid(event_id)) {
+    res.status(400).json('Invalid event id.');
+    return;
+  }  
+
+  let event = await Event.findOne({_id: event_id});
+
+  if (!event) {
+    res.status(400).json('Event id not found.');
+    return;
+  }
+   
+  const deleted = await Event.deleteOne({_id: event_id});
+
+  res.json(deleted);
 });
 
 

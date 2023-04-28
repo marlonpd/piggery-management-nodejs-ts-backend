@@ -34,7 +34,7 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
 });
 
 // Sign In Route
-router.post("/signin1", async (req: Request, res: Response, next: NextFunction) => {
+router.post("/signin", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
 

@@ -12,7 +12,7 @@ router.use('/auth', AuthRoutes);
 router.use('/livestocks', LivestockRoutes);
 router.use('/raise', RaiseRoutes);
 router.use('/accounting', AccountingRoutes);
-router.use('note', NoteRoutes);
+router.use('/note', NoteRoutes);
 router.use('/event', EventRoutes);
 
 export const MainRouter: Router = router;

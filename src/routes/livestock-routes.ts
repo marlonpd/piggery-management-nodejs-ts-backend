@@ -30,10 +30,12 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
 
     if (!raise_id) {
       res.status(400).json('Raise id is required');
+      return;
     }
 
     if (!name) {
       res.status(400).json('Livestock name is required');
+      return;
     }
 
     const payload = {
@@ -57,10 +59,12 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
 
     if (!livestock_id) {
       res.status(400).json('Livestock id is required');
+      return;
     }
 
     if (!name) {
       res.status(400).json('Livestock name is required');
+      return;
     }
 
     const filter = { _id  : livestock_id};

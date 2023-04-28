@@ -15,7 +15,6 @@ const NoteSchema: Schema = new Schema({
     },
     title: { type: Schema.Types.String, required: false },
     description: { type: Schema.Types.String, required: false },
-    amount: { type: Number, required: false },
   }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 });
