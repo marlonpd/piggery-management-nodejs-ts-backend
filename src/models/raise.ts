@@ -1,13 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { RaiseType } from './../utilities/constants';
+import { TRaiseType } from '../utilities/app';
 export interface IRaise extends Document {
-  raise_type: RaiseType;
+  raise_type: TRaiseType;
+  head_count: Number;
   name: string;
   user: Object;
 }
 
 const RaiseSchema: Schema = new Schema({
   raise_type: { type: String, required: true},
+  head_count: { type: Schema.Types.Number, required: true },
   name: { type: Schema.Types.String, required: true },
   user: {
     type: Schema.Types.ObjectId,

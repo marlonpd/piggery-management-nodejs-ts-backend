@@ -1,8 +1,8 @@
-enum RaiseType {
-  fattener,
-  boar,
-  sow,
-  weaner,
+enum ERaiseType {
+  fattener = 'fattener',
+  boar = 'boar',
+  sow = 'sow',
+  weaner = 'weaner',
 }
 
-export { RaiseType }
+export { ERaiseType }
