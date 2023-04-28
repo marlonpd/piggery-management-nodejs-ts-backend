@@ -3,6 +3,7 @@ import { authenticateToken } from '../utilities/authentication';
 import Event from '../models/event';
 import Raise from '../models/raise';
 import { Types } from 'mongoose';
+import moment from 'moment';
 
 const router: Router = Router();
 
@@ -27,9 +28,9 @@ router.get('',  authenticateToken, async function (req: Request, res: Response, 
     return;
   }
 
-  const vents =await  Event.find({raise_id}); 
+  const events =await  Event.find({raise_id}); 
     
-  res.json(vents);
+  res.json(events);
 });
 
 router.post('/save',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
@@ -64,10 +65,18 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
       return;
     }
 
+    let date = moment(event_date);
+
+    if (!date.isValid()) {
+      res.status(400).json('Event date is invalid.');
+      return;
+    }
+
+
     const payload = {
       title : title,
-      event_date: new Date(event_date),
-      riase_id : raise_id,
+      event_date: moment.utc(event_date),
+      raise_id : raise_id,
     };
 
     let entry = new Event(payload); 
@@ -79,9 +88,14 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
 
 router.post('/update',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
-
   const title = req.body.title;
   const event_date = req.body.event_date;
+  const event_id = req.body.event_id;
+
+  if (!event_id) {
+    res.status(400).json('Event id is required');
+    return;
+  }
 
   if (!title) {
     res.status(400).json('Title is required');
@@ -92,8 +106,6 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
     res.status(400).json('Event date is required');
     return;
   }
-
-  const event_id = req.body.node_id;
 
   if (!Types.ObjectId.isValid(event_id)) {
     res.status(400).json('Invalid Event id.');
@@ -107,11 +119,18 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
     return;
   }
 
+  const date = moment(event_date);
+
+  if (!date.isValid()) {
+    res.status(400).json('Event date is invalid.');
+    return;
+  }
+
   const filter = { _id  : event_id};
    
   const update = {
     title: title,
-    event_date: new Date(event_date),
+    event_date: moment.utc(event_date),
   };
 
   const entry = await Event.findOneAndUpdate(filter, update, {
@@ -123,7 +142,7 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
 
 router.post('/delete',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
-  const event_id = req.body.node_id;
+  const event_id = req.body.event_id;
 
   if (!Types.ObjectId.isValid(event_id)) {
     res.status(400).json('Invalid event id.');
