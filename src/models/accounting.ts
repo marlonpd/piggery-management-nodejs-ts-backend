@@ -1,9 +1,9 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { EntryType } from '../utilities/app';
+import { TEntryType } from '../utilities/app';
 export interface IAccounting extends Document {
   raise_id: Number;
   description: string;
-  entry_type: EntryType;
+  entry_type: TEntryType;
   amount: Number;
   updated_at: Date;
   created_at: Date;

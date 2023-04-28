@@ -31,15 +31,18 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
 
         if (!raise_type) {
           res.status(400).json('Raise type is required');
+          return;
         }
       
 
         if (!head_count) {
           res.status(400).json('Head count is required');
+          return;
         }
       
         if (!raise_name) {
           res.status(400).json('Name is required');
+          return;
         }
          
         const payload = {
@@ -93,14 +96,17 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
 
   if (!raise_id) {
     res.status(400).json('Raise id is required');
+    return;
   }
 
   if (!head_count) {
     res.status(400).json('Head count is required');
+    return;
   }
 
   if (!name) {
     res.status(400).json('Name is required');
+    return;
   }
    
   const update = {
@@ -121,12 +127,14 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
 
   if (!raise_id) {
     res.status(400).json('Raise id is required.');
+    return;
   }
 
   let raise = await Raise.findOne({_id: raise_id});
 
   if (!raise) {
     res.status(400).json('Raise id not found.');
+    return;
   }
 
   let deleted = await Raise.deleteOne({_id: raise_id});

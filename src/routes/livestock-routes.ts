@@ -1,12 +1,23 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { authenticateToken } from '../utilities/authentication';
 import Livestock, { ILivestock } from '../models/livestock';
+import { Types } from 'mongoose';
 
 const router: Router = Router();
 
 router.get('',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
-  const raise_id =  req.params.raise_id;
+  const raise_id =  req.query.raise_id?.toString();
+
+  if (!raise_id) {
+    res.status(400).json('Raise id is required.');
+    return;
+  }
+
+  if (!Types.ObjectId.isValid(raise_id)) {
+    res.status(400).json('Invalid raise id.');
+    return;
+  }
 
   const livestocks = await  Livestock.find({raise_id}); 
     
