@@ -55,7 +55,7 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
         let raise = new Raise(payload); 
         await raise.save();
 
-        if (raise_type === ERaiseType.fattener) {
+        if (raise_type === ERaiseType.fattener || raise_type === ERaiseType.weaner) {
           for (let i = 0; i < head_count; i++ ) {
             const lss = new Livestock({
               name : raise_type + `(${i})`,
