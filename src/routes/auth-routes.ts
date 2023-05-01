@@ -4,6 +4,7 @@ import bcryptjs from 'bcryptjs';
 import User from '../models/user';
 import { UserJwtPayload } from '../utilities/app';
 import type { JwtPayload } from "jsonwebtoken"
+import { authenticateToken } from '../utilities/authentication';
 
 const router: Router = Router();
 
@@ -79,6 +80,24 @@ router.post("/tokenIsValid", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+router.post("/me", authenticateToken ,async (req, res) => {
+  try {
+    const id =  req.user?.id;
+    const user = await User.findById(id);
+    const token = req.header("x-auth-token");
+
+    const response = {
+      token,
+      ...user?._doc
+    }
+
+    res.json(response);
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 
 router.get('/get',  function (req: Request, res: Response, next: NextFunction) {
 

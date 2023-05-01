@@ -58,6 +58,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
   jwt.verify(token, secret , (err: any, user: any) => {
     console.log(err)
     if (err) return res.sendStatus(403)
+    user.token = token;
     req.user = user
     next()
   })
