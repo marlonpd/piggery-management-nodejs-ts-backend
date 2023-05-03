@@ -30,18 +30,18 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
         const head_count = Number(req.body.head_count);
 
         if (!raise_type) {
-          res.status(400).json('Raise type is required');
+          res.status(400).json({'msg' : 'Raise type is required'});
           return;
         }
       
 
         if (!head_count) {
-          res.status(400).json('Head count is required');
+          res.status(400).json({'msg':'Head count is required'});
           return;
         }
       
         if (!raise_name) {
-          res.status(400).json('Name is required');
+          res.status(400).json({'msg':'Name is required'});
           return;
         }
          
@@ -95,17 +95,17 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
   const name = req.body.name;
 
   if (!raise_id) {
-    res.status(400).json('Raise id is required');
+    res.status(400).json({'msg':'Raise id is required'});
     return;
   }
 
   if (!head_count) {
-    res.status(400).json('Head count is required');
+    res.status(400).json({'msg':'Head count is required'});
     return;
   }
 
   if (!name) {
-    res.status(400).json('Name is required');
+    res.status(400).json({'msg':'Name is required'});
     return;
   }
    
@@ -126,14 +126,14 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
   const raise_id =  req.body.id;
 
   if (!raise_id) {
-    res.status(400).json('Raise id is required.');
+    res.status(400).json({'msg':'Raise id is required.'});
     return;
   }
 
   let raise = await Raise.findOne({_id: raise_id});
 
   if (!raise) {
-    res.status(400).json('Raise id not found.');
+    res.status(400).json({'msg':'Raise id not found.'});
     return;
   }
 
