@@ -4,6 +4,7 @@ export interface IRaise extends Document {
   raise_type: TRaiseType;
   head_count: Number;
   name: string;
+  hog_pen: string;
   user: Object;
 }
 
@@ -11,6 +12,7 @@ const RaiseSchema: Schema = new Schema({
   raise_type: { type: String, required: true},
   head_count: { type: Schema.Types.Number, required: true },
   name: { type: Schema.Types.String, required: true },
+  hog_pen: { type: Schema.Types.String, required: false },
   user: {
     type: Schema.Types.ObjectId,
     required: true

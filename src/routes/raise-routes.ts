@@ -89,10 +89,12 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
 
 router.post('/update',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
-  const raise_id = req.body.id;
-  const filter = { _id  : raise_id};
-  const head_count = Number(req.body.head_count);
   const name = req.body.name;
+  const raise_id = req.body.id;
+  const hog_pen = req.body.hog_pen;
+  const head_count = Number(req.body.head_count);
+
+  const filter = { _id  : raise_id};
 
   if (!raise_id) {
     res.status(400).json({'msg':'Raise id is required'});
@@ -108,10 +110,11 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
     res.status(400).json({'msg':'Name is required'});
     return;
   }
-   
+
   const update = {
     name,
-    head_count
+    head_count,
+    hog_pen,
   };
 
   const raise = await Raise.findOneAndUpdate(filter, update, {
