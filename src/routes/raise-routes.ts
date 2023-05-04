@@ -27,6 +27,7 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
         const _id =  req.user?.id;
         const raise_type = req.body.raise_type;
         const raise_name = req.body.name;
+        const hog_pen = req.body.hog_pen;
         const head_count = Number(req.body.head_count);
 
         if (!raise_type) {
@@ -49,6 +50,7 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
           raise_type : raise_type,
           name : raise_name,
           head_count: head_count,
+          hog_pen: hog_pen,
           user : _id,
         };
 

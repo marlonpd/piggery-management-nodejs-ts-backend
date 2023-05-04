@@ -10,12 +10,12 @@ router.get('',  authenticateToken, async function (req: Request, res: Response, 
   const raise_id =  req.query.raise_id?.toString();
 
   if (!raise_id) {
-    res.status(400).json('Raise id is required.');
+    res.status(400).json({'msg': 'Raise id is required.'});
     return;
   }
 
   if (!Types.ObjectId.isValid(raise_id)) {
-    res.status(400).json('Invalid raise id.');
+    res.status(400).json({'msg': 'Invalid raise id.'});
     return;
   }
 
@@ -29,12 +29,12 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
     const name = req.body.name;
 
     if (!raise_id) {
-      res.status(400).json('Raise id is required');
+      res.status(400).json({'msg': 'Raise id is required'});
       return;
     }
 
     if (!name) {
-      res.status(400).json('Livestock name is required');
+      res.status(400).json({'msg': 'Livestock name is required'});
       return;
     }
 
@@ -58,12 +58,12 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
     const livestock_id = req.body.livestock_id;
 
     if (!livestock_id) {
-      res.status(400).json('Livestock id is required');
+      res.status(400).json({'msg': 'Livestock id is required'});
       return;
     }
 
     if (!name) {
-      res.status(400).json('Livestock name is required');
+      res.status(400).json({'msg': 'Livestock name is required'});
       return;
     }
 
@@ -87,13 +87,13 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
   const livestock_id = req.body.livestock_id;
 
   if (!livestock_id) {
-    res.status(400).json('Livestock id is required');
+    res.status(400).json({'msg': 'Livestock id is required'});
   }
 
   let livestock = await Livestock.findOne({_id: livestock_id});
 
   if (!livestock) {
-    res.status(400).json('Livestock id not found.');
+    res.status(400).json({'msg': 'Livestock id not found.'});
   }
 
   let deleted = await Livestock.deleteOne({_id: livestock_id});

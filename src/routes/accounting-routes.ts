@@ -13,19 +13,19 @@ router.get('',  authenticateToken, async function (req: Request, res: Response, 
     const raise_id =  req.query.raise_id?.toString() ?? '';
 
     if (!raise_id) {
-      res.status(400).json('Raise id is required.');
+      res.status(400).json({'msg': 'Raise id is required.'});
       return;
     }
 
     if (!Types.ObjectId.isValid(raise_id)) {
-      res.status(400).json('Invalid raise id.');
+      res.status(400).json({'msg': 'Invalid raise id.'});
       return;
     }
 
     let raise = await Raise.findOne({_id: raise_id});
 
     if (!raise) {
-      res.status(400).json('Raise id not found.');
+      res.status(400).json({'msg': 'Raise id not found.'});
       return;
     }
 
@@ -42,49 +42,49 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
         const raise_id =  req.body.raise_id;
 
         if (!raise_id) {
-          res.status(400).json('Raise id is required1.' );
+          res.status(400).json({'msg': 'Raise id is required1.'});
           return;
         }
 
         if (!Types.ObjectId.isValid(raise_id)) {
-          res.status(400).json('Invalid raise id.');
+          res.status(400).json({'msg': 'Invalid raise id.'});
           return;
         }
 
         let raise = await Raise.findOne({_id: raise_id});
 
         if (!raise) {
-          res.status(400).json('Raise id not found.');
+          res.status(400).json({'msg': 'Raise id not found.'});
         }
 
         const description =  req.body.description;
 
         if (!description) {
-          res.status(400).json('Description id is required.');
+          res.status(400).json({'msg': 'Description id is required.'});
           return;
         }
 
         const entry_type =  req.body.entry_type;
 
         if (!entry_type) {
-          res.status(400).json('Entry type id is required.');
+          res.status(400).json({'msg': 'Entry type id is required.'});
           return;
         }
 
         if (!(entry_type in EEntryType)) {
-          res.status(400).json('Invalid entry type.');
+          res.status(400).json({'msg': 'Invalid entry type.'});
           return;
         }
 
         const amount =  Number(req.body.amount);
 
         if (!amount) {
-          res.status(400).json('Amount is required.');
+          res.status(400).json({'msg': 'Amount is required.'});
           return;
         }
 
         if (isNaN(amount)) {
-          res.status(400).json('Invalid amount.');
+          res.status(400).json({'msg': 'Invalid amount.'});
           return;
         }
 
@@ -110,12 +110,12 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
         const accounting_id =  req.body.accounting_id;
 
         if (!accounting_id) {
-          res.status(400).json('Accounting id is required.');
+          res.status(400).json({'msg': 'Accounting id is required.'});
           return;
         }
 
         if (!Types.ObjectId.isValid(accounting_id)) {
-          res.status(400).json('Invalid accounting id.');
+          res.status(400).json({'msg': 'Invalid accounting id.'});
           return;
         }
 
@@ -124,31 +124,31 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
         const description =  req.body.description;
 
         if (!description) {
-          res.status(400).json('Description id is required.');
+          res.status(400).json({'msg': 'Description id is required.'});
           return;
         }
 
         const entry_type =  req.body.entry_type;
 
         if (!entry_type) {
-          res.status(400).json('Entry type id is required.');
+          res.status(400).json({'msg': 'Entry type id is required.'});
           return;
         }
 
         if (!(entry_type in EEntryType)) {
-          res.status(400).json('Invalid entry type.');
+          res.status(400).json({'msg': 'Invalid entry type.'});
           return;
         }
 
         const amount =  Number(req.body.amount);
 
         if (!amount) {
-          res.status(400).json('Amount is required.');
+          res.status(400).json({'msg': 'Amount is required.'});
           return;
         }
 
         if (isNaN(amount)) {
-          res.status(400).json('Invalid amount.');
+          res.status(400).json({'msg': 'Invalid amount.'});
           return;
         }
 
@@ -173,19 +173,19 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
       const accounting_id =  req.body.accounting_id;
 
       if (!accounting_id) {
-        res.status(400).json('Accounting id is required.');
+        res.status(400).json({'msg': 'Accounting id is required.'});
         return;
       }
 
       if (!Types.ObjectId.isValid(accounting_id)) {
-        res.status(400).json('Invalid accounting id.');
+        res.status(400).json({'msg': 'Invalid accounting id.'});
         return;
       }
 
       let accounting = await Accounting.findOne({_id: accounting_id});
 
       if (!accounting) {
-        res.status(400).json('Accounting id not found.');
+        res.status(400).json({'msg': 'Accounting id not found.'});
       }
       
       const deleted = await Accounting.deleteOne({_id: accounting_id});

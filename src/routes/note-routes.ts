@@ -11,19 +11,19 @@ router.get('',  authenticateToken, async function (req: Request, res: Response, 
   const raise_id =  req.query.raise_id?.toString();
 
   if (!raise_id) {
-    res.status(400).json('Raise id is required.');
+    res.status(400).json({'msg': 'Raise id is required.'});
     return;
   }
 
   if (!Types.ObjectId.isValid(raise_id)) {
-    res.status(400).json('Invalid raise id.');
+    res.status(400).json({'msg': 'Invalid raise id.'});
     return;
   }
 
   let raise = await Raise.findOne({_id: raise_id});
 
   if (!raise) {
-    res.status(400).json('Raise id not found.');
+    res.status(400).json({'msg': 'Raise id not found.'});
     return;
   }
 
@@ -38,29 +38,29 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
     const description = req.body.description;
 
     if (!raise_id) {
-      res.status(400).json('Raise id is required');
+      res.status(400).json({'msg': 'Raise id is required'});
       return;
     }
 
     if (!Types.ObjectId.isValid(raise_id)) {
-      res.status(400).json('Invalid raise id.');
+      res.status(400).json({'msg': 'Invalid raise id.'});
       return;
     }  
 
     let raise = await Raise.findOne({_id: raise_id});
 
     if (!raise) {
-      res.status(400).json('Raise id not found.');
+      res.status(400).json({'msg': 'Raise id not found.'});
       return;
     }
 
     if (!title) {
-      res.status(400).json('Title is required');
+      res.status(400).json({'msg': 'Title is required'});
       return;
     }
 
     if (!description) {
-      res.status(400).json('Description is required');
+      res.status(400).json({'msg': 'Description is required'});
       return;
     }
 
@@ -84,26 +84,26 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
   const description = req.body.description;
 
   if (!title) {
-    res.status(400).json('Title is required');
+    res.status(400).json({'msg': 'Title is required.'});
     return;
   }
 
   if (!description) {
-    res.status(400).json('Description is required');
+    res.status(400).json({'msg': 'Description is required.'});
     return;
   }
 
   const note_id = req.body.note_id;
 
   if (!Types.ObjectId.isValid(note_id)) {
-    res.status(400).json('Invalid note id.');
+    res.status(400).json({'msg': 'Invalid note id.'});
     return;
   }  
 
   let note = await Note.findOne({_id: note_id});
 
   if (!note) {
-    res.status(400).json('Note id not found.');
+    res.status(400).json({'msg': 'Note id not found.'});
     return;
   }
 
@@ -126,14 +126,14 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
   const note_id = req.body.note_id;
 
   if (!Types.ObjectId.isValid(note_id)) {
-    res.status(400).json('Invalid note id.');
+    res.status(400).json({'msg': 'Invalid note id.'});
     return;
   }  
 
   let note = await Note.findOne({_id: note_id});
 
   if (!note) {
-    res.status(400).json('Note id not found.');
+    res.status(400).json({'msg': 'Note id not found.'});
     return;
   }
    

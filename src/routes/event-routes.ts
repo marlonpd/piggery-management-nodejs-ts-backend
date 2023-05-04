@@ -12,19 +12,19 @@ router.get('',  authenticateToken, async function (req: Request, res: Response, 
   const raise_id =  req.query.raise_id?.toString();
 
   if (!raise_id) {
-    res.status(400).json('Raise id is required.');
+    res.status(400).json({'msg': 'Raise id is required.'});
     return;
   }
 
   if (!Types.ObjectId.isValid(raise_id)) {
-    res.status(400).json('Invalid raise id.');
+    res.status(400).json({'msg': 'Invalid raise id.'});
     return;
   }
 
   let raise = await Raise.findOne({_id: raise_id});
 
   if (!raise) {
-    res.status(400).json('Raise id not found.');
+    res.status(400).json({'msg': 'Raise id not found.'});
     return;
   }
 
@@ -40,36 +40,36 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
         const event_date = req.body.event_date;
 
         if (!raise_id) {
-          res.status(400).json('Raise id is required');
+          res.status(400).json({'msg': 'Raise id is required'});
           return;
         }
 
         if (!Types.ObjectId.isValid(raise_id)) {
-          res.status(400).json('Invalid raise id.');
+          res.status(400).json({'msg': 'Invalid raise id.'});
           return;
         }  
 
         let raise = await Raise.findOne({_id: raise_id});
 
         if (!raise) {
-          res.status(400).json('Raise id not found.');
+          res.status(400).json({'msg': 'Raise id not found.'});
           return;
         }
 
         if (!title) {
-          res.status(400).json('Title is required');
+          res.status(400).json({'msg': 'Title is required'});
           return;
         }
 
         if (!event_date) {
-          res.status(400).json('Event date is required. Format: YYYY-MM-DD');
+          res.status(400).json({'msg': 'Event date is required. Format: YYYY-MM-DD'});
           return;
         }
 
         let date = moment(event_date);
 
         if (!date.isValid()) {
-          res.status(400).json('Event date is invalid. Format: YYYY-MM-DD');
+          res.status(400).json({'msg': 'Event date is invalid. Format: YYYY-MM-DD'});
           return;
         }
 
@@ -97,36 +97,36 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
   const event_id = req.body.event_id;
 
   if (!event_id) {
-    res.status(400).json('Event id is required');
+    res.status(400).json({'msg': 'Event id is required'});
     return;
   }
 
   if (!title) {
-    res.status(400).json('Title is required');
+    res.status(400).json({'msg': 'Title is required'});
     return;
   }
 
   if (!event_date) {
-    res.status(400).json('Event date is required');
+    res.status(400).json({'msg': 'Event date is required'});
     return;
   }
 
   if (!Types.ObjectId.isValid(event_id)) {
-    res.status(400).json('Invalid Event id.');
+    res.status(400).json({'msg': 'Invalid Event id.'});
     return;
   }  
 
   let event = await Event.findOne({_id: event_id});
 
   if (!event) {
-    res.status(400).json('Event id not found.');
+    res.status(400).json({'msg': 'Event id not found.'});
     return;
   }
 
   const date = moment(event_date);
 
   if (!date.isValid()) {
-    res.status(400).json('Event date is invalid.');
+    res.status(400).json({'msg': 'Event date is invalid.'});
     return;
   }
 
@@ -149,14 +149,14 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
   const event_id = req.body.event_id;
 
   if (!Types.ObjectId.isValid(event_id)) {
-    res.status(400).json('Invalid event id.');
+    res.status(400).json({'msg': 'Invalid event id.'});
     return;
   }  
 
   let event = await Event.findOne({_id: event_id});
 
   if (!event) {
-    res.status(400).json('Event id not found.');
+    res.status(400).json({'msg': 'Event id not found.'});
     return;
   }
    
