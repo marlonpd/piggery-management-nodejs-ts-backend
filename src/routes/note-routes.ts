@@ -93,7 +93,7 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
     return;
   }
 
-  const note_id = req.body.note_id;
+  const note_id = req.body.id;
 
   if (!Types.ObjectId.isValid(note_id)) {
     res.status(400).json({'msg': 'Invalid note id.'});
