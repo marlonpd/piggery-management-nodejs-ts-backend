@@ -82,6 +82,7 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
 
   const title = req.body.title;
   const description = req.body.description;
+  console.log(req.body);
 
   if (!title) {
     res.status(400).json({'msg': 'Title is required.'});
