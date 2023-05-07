@@ -107,7 +107,7 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
 
 router.post('/update',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
     try {
-        const accounting_id =  req.body.accounting_id;
+        const accounting_id =  req.body.id;
 
         if (!accounting_id) {
           res.status(400).json({'msg': 'Accounting id is required.'});
@@ -170,7 +170,7 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
 
 router.post('/delete',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
   try {
-      const accounting_id =  req.body.accounting_id;
+      const accounting_id =  req.body.id;
 
       if (!accounting_id) {
         res.status(400).json({'msg': 'Accounting id is required.'});

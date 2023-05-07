@@ -94,7 +94,7 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
 
   const title = req.body.title;
   const event_date = req.body.event_date;
-  const event_id = req.body.event_id;
+  const event_id = req.body.id;
 
   if (!event_id) {
     res.status(400).json({'msg': 'Event id is required'});
@@ -146,7 +146,7 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
 
 router.post('/delete',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
 
-  const event_id = req.body.event_id;
+  const event_id = req.body.id;
 
   if (!Types.ObjectId.isValid(event_id)) {
     res.status(400).json({'msg': 'Invalid event id.'});
