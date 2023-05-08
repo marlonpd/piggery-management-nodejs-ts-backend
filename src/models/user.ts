@@ -4,6 +4,7 @@ export interface IUser extends Document {
   email: string;
   name: string;
   password: string;
+  security_code: string;
   _doc: Object
 }
 
@@ -23,6 +24,7 @@ const UserSchema: Schema = new Schema({
   },
   name: { type: Schema.Types.String, required: true },
   password: { type: Schema.Types.String, required: true },
+  security_code: { type: Schema.Types.String, required: false },
 },
 {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },

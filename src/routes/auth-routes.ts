@@ -2,9 +2,10 @@ import { NextFunction, Request, Response, Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcryptjs from 'bcryptjs';
 import User from '../models/user';
-import { UserJwtPayload } from '../utilities/app';
+import nodemailer from 'nodemailer';
 import type { JwtPayload } from "jsonwebtoken"
 import { authenticateToken } from '../utilities/authentication';
+import { SMTP_EMAIL, SMTP_PASSWORD } from '../utilities/secrets';
 
 const router: Router = Router();
 
@@ -93,6 +94,118 @@ router.post("/me", authenticateToken ,async (req, res) => {
     }
 
     res.json(response);
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+//forgot password
+router.post('/request-change-password', async function(req: Request, res: Response, next: NextFunction){
+  const email = req.body.email;
+
+  if (!email) {
+    res.status(400).json({'msg' : 'Email is required.'});
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res
+      .status(400)
+      .json({ msg: "User with this email does not exist!" });
+  }
+
+  try {
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: SMTP_EMAIL,
+          pass: SMTP_PASSWORD,
+        }
+      });
+
+      const security_code = String(100000 + Math.floor(Math.random() * 900000));
+      user.security_code = security_code;
+      await user.save();
+
+      const mailOptions = {
+        from: SMTP_EMAIL,
+        to: user.email,
+        subject: 'HogMaster - Security code for changing password',
+        html: `Here is the security code: ${security_code}.`
+      };
+
+      transporter.sendMail(mailOptions, function(e, info){
+        if (e) {
+          res.status(500).json({ error: e.message });
+        } else {
+          res.json({'msg': `An security code has been sent to your - ${email}.`});
+        }
+      });
+
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+//change password
+
+router.post('/update-password', async function(req: Request, res: Response, next: NextFunction){
+  const email = req.body.email;
+  const security_code = req.body.security_code;
+  const password = req.body.password;
+  const password_confirm = req.body.password_confirm;
+
+  if (!security_code) {
+    res.status(400).json({'msg' : 'Security code is required.'});
+  }
+
+  if (!email) {
+    res.status(400).json({'msg' : 'Email is required.'});
+  }
+
+  if (!password) {
+    res.status(400).json({'msg' : 'Password is required.'});
+  }
+
+  if (!password_confirm) {
+    res.status(400).json({'msg' : 'Password confirmation is required.'});
+  }
+
+  if (password.length < 6) {
+      res.status(400).json({'msg' : 'Password should be minimum of 6 characters.'});
+  }
+
+  if (password_confirm.length < 6) {
+    res.status(400).json({'msg' : 'Password confirmation should be minimum of 6 characters.'});
+  }
+
+  if (password != password_confirm) {
+    res.status(400).json({'msg' : 'Password did not match.'});  
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res
+      .status(400)
+      .json({ msg: "User with this email does not exist!" });
+  }
+
+  if (user.security_code != security_code) {
+    res.status(400).json({'msg' : 'Security code is invalid.'});    
+  }
+
+  try {
+
+      user.security_code = '';
+      const hashedPassword = await bcryptjs.hash(password, 8);
+      user.password = hashedPassword;
+      await user.save();
+
+
+      res.json('Password has been successulfy update. You can now login using the new password.');
+      
   } catch (e: any) {
     res.status(500).json({ error: e.message });
   }

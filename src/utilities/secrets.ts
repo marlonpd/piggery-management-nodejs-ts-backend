@@ -10,3 +10,6 @@ export const IS_PRODUCTION  = ENVIRONMENT === "production";
 export const LOG_DIRECTORY  = _.defaultTo(process.env.LOG_DIRECTORY, path.resolve('logs'));
 export const JWT_SECRET     = _.defaultTo(process.env.JWT_SECRET, "secret");
 export const SESSION_SECRET = _.defaultTo(process.env.SESSION_SECRET, "secret");
+
+export const SMTP_EMAIL = _.defaultTo(process.env.SMTP_EMAIL, "secret");
+export const SMTP_PASSWORD = _.defaultTo(process.env.SMTP_PASSWORD, "secret");
