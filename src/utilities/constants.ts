@@ -7,5 +7,5 @@ export enum ERaiseType {
 
 export enum EEntryType {
   expenses = 'expenses',
-  income = 'income',
+  sales = 'sales',
 }

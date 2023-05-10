@@ -196,5 +196,100 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
   }
 });
 
+router.get('/summary', authenticateToken, async function(req: Request, res: Response, next: NextFunction){
+  try {
+
+        const raise_id =  req.query.raise_id?.toString() ?? '';
+
+        if (!raise_id) {
+          res.status(400).json({'msg': 'Raise id is required.'});
+          return;
+        }
+
+        if (!Types.ObjectId.isValid(raise_id)) {
+          res.status(400).json({'msg': 'Invalid raise id.'});
+          return;
+        }
+
+        // const total_expenses = Accounting.aggregate([{
+        //     $match: {
+        //       entry_type: 'expenses',
+        //       raise_id: new Types.ObjectId(raise_id),
+        //     }
+        //   },
+        //   {
+        //     $group: {
+        //       _id: 'expenses',
+        //       sum: {
+        //         $sum: {
+        //           "$toInt": "$amount"
+        //         }
+        //       }
+        //     }
+        //   },
+        // ]);
+
+        const total_expenses = Accounting.aggregate([{
+          $match: {
+            entry_type: 'expenses',
+            raise_id: new Types.ObjectId(raise_id),
+          }
+        },
+        {
+          $project: {
+            _id: 0, amount: 1,
+          }
+        },
+        {
+          $group: {
+            _id: 'expenses',
+            total: {
+              $sum: "$amount",
+            }
+          }
+        },
+      ]);
+
+
+      console.log(await total_expenses.exec());
+
+
+      const te   = await total_expenses.exec();
+      const expenses_sum =  te[0].total;
+
+      const total_sales = Accounting.aggregate([{
+          $match: {
+            entry_type: 'income',
+            raise_id: new Types.ObjectId(raise_id),
+          }
+        },
+        {
+          $group: {
+            _id: 'income',
+            sum: {
+              $sum: {
+                "$toInt": "$amount"
+              }
+            }
+          }
+        },
+      ]);
+
+      const ts   = await total_sales.exec();
+      const sales_sum = ts[0].sum;
+      const net_income = sales_sum - expenses_sum;
+
+      const payload = {
+        expenses_sum, 
+        sales_sum, 
+        net_income,
+      };
+
+      res.json(payload);
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 
 export const AccountingRoutes: Router = router;
