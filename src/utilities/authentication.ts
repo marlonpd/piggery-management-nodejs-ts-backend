@@ -2,22 +2,12 @@
 import { Request, NextFunction, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-function getTokenFromHeader(req: Request): string | null {
+export const  getTokenFromHeader = (req: Request): string => {
 
-  const headerAuth: string | string[] = req.headers.authorization ?? '';
+  const authHeader: string = req.headers['authorization']?.toString() ?? ''
+  const token = authHeader && authHeader?.split(' ')[1]
 
-  if (headerAuth !== undefined && headerAuth !== null) {
-
-    if (Array.isArray(headerAuth)) {
-      return splitToken(headerAuth[0]);
-    } else {
-      return splitToken(headerAuth);
-    }
-
-  } else {
-
-    return null;
-  }
+  return token;
 }
 
 

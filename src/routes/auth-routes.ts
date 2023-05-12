@@ -4,8 +4,8 @@ import bcryptjs from 'bcryptjs';
 import User from '../models/user';
 import nodemailer from 'nodemailer';
 import type { JwtPayload } from "jsonwebtoken"
-import { authenticateToken } from '../utilities/authentication';
-import { SMTP_EMAIL, SMTP_PASSWORD } from '../utilities/secrets';
+import { authenticateToken, getTokenFromHeader } from '../utilities/authentication';
+import { JWT_SECRET, SMTP_EMAIL, SMTP_PASSWORD } from '../utilities/secrets';
 
 const router: Router = Router();
 
@@ -150,7 +150,7 @@ router.post('/request-change-password', async function(req: Request, res: Respon
 });
 //change password
 
-router.post('/update-password', async function(req: Request, res: Response, next: NextFunction){
+router.post('/request-update-password', async function(req: Request, res: Response, next: NextFunction){
   const email = req.body.email;
   const security_code = req.body.security_code;
   const password = req.body.password;
@@ -211,22 +211,76 @@ router.post('/update-password', async function(req: Request, res: Response, next
   }
 });
 
+router.post('/update-password', authenticateToken, async function(req: Request, res: Response, next: NextFunction){
+
+  const old_password = req.body.old_password;
+  const password = req.body.password;
+  const password_confirm = req.body.password_confirm;
+
+  if (!old_password) {
+    res.status(400).json({'msg' : 'Old password is required.'});
+  }
+
+  const secret = JWT_SECRET;  
+  const token = getTokenFromHeader(req);
+
+  const verified  = jwt.verify(token, secret) as JwtPayload;
+
+  if (!verified) return  res.status(400).json({'msg' : 'Invalid token.'});
+
+  const user = await User.findById(verified.id);
+
+  if (!user) {
+    return res.status(400).json({'msg' : 'Invalid token.'});
+  }
+
+  const isMatch = await bcryptjs.compare(old_password, user.password);
+
+  if (!isMatch) {
+    return res.status(400).json({ msg: "Incorrect password." });
+  }
+
+  if (!password) {
+    return res.status(400).json({'msg' : 'New password is required.'});
+  }
+
+  if (!password_confirm) {
+    return res.status(400).json({'msg' : 'Password confirmation is required.'});
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({'msg' : 'Password should be minimum of 6 characters.'});
+  }
+
+  if (password_confirm.length < 6) {
+    return res.status(400).json({'msg' : 'Password confirmation should be minimum of 6 characters.'});
+  }
+
+  if (password != password_confirm) {
+    return res.status(400).json({'msg' : 'Password did not match.'});  
+  }
+
+  try {
+
+      user.security_code = '';
+      const hashedPassword = await bcryptjs.hash(password, 8);
+      user.password = hashedPassword;
+      await user.save();
+
+      res.json('Password has been successulfy update. You can now login using the new password.');
+      
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 
 router.get('/get',  function (req: Request, res: Response, next: NextFunction) {
 
-  console.log('getter');
-
-  // let payload = {
-  //   raise_type : req.body.raise_type,
-  //   name : req.body.name,
-  //   user : req.payload.id,
-  // };
-
-  // let new_raise = new Raise(payload); 
-
-
+  return res.json('accessible');
 });
 
 
 
 export const AuthRoutes: Router = router;
+
