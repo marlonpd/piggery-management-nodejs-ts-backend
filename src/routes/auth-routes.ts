@@ -140,7 +140,7 @@ router.post('/request-change-password', async function(req: Request, res: Respon
         if (e) {
           res.status(500).json({ error: e.message });
         } else {
-          res.json({'is_sent': true});
+          res.json({'is_sent': true , 'msg': `A security code has been sent to ${email}.`});
         }
       });
 
