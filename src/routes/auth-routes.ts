@@ -157,31 +157,31 @@ router.post('/request-update-password', async function(req: Request, res: Respon
   const password_confirm = req.body.password_confirm;
 
   if (!security_code) {
-    res.status(400).json({'msg' : 'Security code is required.'});
+    res.status(400).json({'msg' : 'Security code is required.', is_success: false});
   }
 
   if (!email) {
-    res.status(400).json({'msg' : 'Email is required.'});
+    res.status(400).json({'msg' : 'Email is required.', is_success: false});
   }
 
   if (!password) {
-    res.status(400).json({'msg' : 'Password is required.'});
+    res.status(400).json({'msg' : 'Password is required.', is_success: false});
   }
 
   if (!password_confirm) {
-    res.status(400).json({'msg' : 'Password confirmation is required.'});
+    res.status(400).json({'msg' : 'Password confirmation is required.', is_success: false});
   }
 
   if (password.length < 6) {
-      res.status(400).json({'msg' : 'Password should be minimum of 6 characters.'});
+      res.status(400).json({'msg' : 'Password should be minimum of 6 characters.', is_success: false});
   }
 
   if (password_confirm.length < 6) {
-    res.status(400).json({'msg' : 'Password confirmation should be minimum of 6 characters.'});
+    res.status(400).json({'msg' : 'Password confirmation should be minimum of 6 characters.', is_success: false});
   }
 
   if (password != password_confirm) {
-    res.status(400).json({'msg' : 'Password did not match.'});  
+    res.status(400).json({'msg' : 'Password did not match.', is_success: false});  
   }
 
   const user = await User.findOne({ email });
@@ -189,11 +189,11 @@ router.post('/request-update-password', async function(req: Request, res: Respon
   if (!user) {
     return res
       .status(400)
-      .json({ msg: "User with this email does not exist!" });
+      .json({ msg: "User with this email does not exist!", is_success: false });
   }
 
   if (user.security_code != security_code) {
-    res.status(400).json({'msg' : 'Security code is invalid.'});    
+    res.status(400).json({'msg' : 'Security code is invalid.', is_success: false});    
   }
 
   try {
@@ -203,8 +203,7 @@ router.post('/request-update-password', async function(req: Request, res: Respon
       user.password = hashedPassword;
       await user.save();
 
-
-      res.json('Password has been successulfy update. You can now login using the new password.');
+      res.json({msg:'Password has been successulfy update. You can now login using the new password.', is_success: true});
       
   } catch (e: any) {
     res.status(500).json({ error: e.message });
@@ -254,7 +253,7 @@ router.post('/update-password', authenticateToken, async function(req: Request, 
   const password_confirm = req.body.password_confirm;
 
   if (!old_password) {
-    res.status(400).json({'msg' : 'Old password is required.'});
+    res.status(400).json({'msg' : 'Old password is required.', is_success: false});
   }
 
   const secret = JWT_SECRET;  
@@ -262,7 +261,7 @@ router.post('/update-password', authenticateToken, async function(req: Request, 
 
   const verified  = jwt.verify(token, secret) as JwtPayload;
 
-  if (!verified) return  res.status(400).json({'msg' : 'Invalid token.'});
+  if (!verified) return  res.status(400).json({'msg' : 'Invalid token.', is_success: false});
 
   const user = await User.findById(verified.id);
 
