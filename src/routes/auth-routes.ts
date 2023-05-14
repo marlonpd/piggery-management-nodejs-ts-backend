@@ -211,6 +211,42 @@ router.post('/request-update-password', async function(req: Request, res: Respon
   }
 });
 
+
+
+router.post('/confirm-security-code', async function(req: Request, res: Response, next: NextFunction){
+
+  try {
+        
+      const email = req.body.email;
+      const security_code = req.body.security_code;
+
+      if (!security_code) {
+        res.status(400).json({'msg' : 'Security code is required.', is_correct:false});
+      }
+
+      if (!email) {
+        res.status(400).json({'msg' : 'Email is required.', is_correct:false});
+      }
+
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return res
+          .status(400)
+          .json({ msg: "User with this email does not exist!" , is_correct:false});
+      }
+
+      if (user.security_code != security_code) {
+        res.status(400).json({'msg' : 'Security code is invalid.', is_correct:false});    
+      }
+
+      res.json({msg: 'Security code is correct, you can now change your password.', is_correct: true});
+      
+  } catch (e: any) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 router.post('/update-password', authenticateToken, async function(req: Request, res: Response, next: NextFunction){
 
   const old_password = req.body.old_password;
