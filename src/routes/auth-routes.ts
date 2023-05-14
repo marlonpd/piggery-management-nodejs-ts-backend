@@ -104,7 +104,7 @@ router.post('/request-change-password', async function(req: Request, res: Respon
   const email = req.body.email;
 
   if (!email) {
-    res.status(400).json({'msg' : 'Email is required.'});
+    res.status(400).json({'msg' : 'Email is required.', 'is_sent': false });
   }
 
   const user = await User.findOne({ email });
@@ -112,7 +112,7 @@ router.post('/request-change-password', async function(req: Request, res: Respon
   if (!user) {
     return res
       .status(400)
-      .json({ msg: "User with this email does not exist!" });
+      .json({ msg: "User with this email does not exist!", 'is_sent': false  });
   }
 
   try {
@@ -138,14 +138,14 @@ router.post('/request-change-password', async function(req: Request, res: Respon
 
       transporter.sendMail(mailOptions, function(e, info){
         if (e) {
-          res.status(500).json({ error: e.message });
+          res.status(500).json({ error: e.message, 'is_sent': false  });
         } else {
           res.json({'is_sent': true , 'msg': `A security code has been sent to ${email}.`});
         }
       });
 
   } catch (e: any) {
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: e.message , 'is_sent': false  });
   }
 });
 //change password
