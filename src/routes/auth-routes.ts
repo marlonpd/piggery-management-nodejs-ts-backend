@@ -248,65 +248,65 @@ router.post('/confirm-security-code', async function(req: Request, res: Response
 
 router.post('/update-password', authenticateToken, async function(req: Request, res: Response, next: NextFunction){
 
-  const old_password = req.body.old_password;
-  const password = req.body.password;
-  const password_confirm = req.body.password_confirm;
+    const old_password = req.body.old_password;
+    const password = req.body.password;
+    const password_confirm = req.body.password_confirm;
 
-  if (!old_password) {
-    res.status(400).json({'msg' : 'Old password is required.', is_success: false});
-  }
+    if (!old_password) {
+      res.status(400).json({'msg' : 'Old password is required.', is_success: false});
+    }
 
-  const secret = JWT_SECRET;  
-  const token = getTokenFromHeader(req);
+    const secret = JWT_SECRET;  
+    const token = getTokenFromHeader(req);
 
-  const verified  = jwt.verify(token, secret) as JwtPayload;
+    const verified  = jwt.verify(token, secret) as JwtPayload;
 
-  if (!verified) return  res.status(400).json({'msg' : 'Invalid token.', is_success: false});
+    if (!verified) return  res.status(400).json({'msg' : 'Invalid token.', is_success: false});
 
-  const user = await User.findById(verified.id);
+    const user = await User.findById(verified.id);
 
-  if (!user) {
-    return res.status(400).json({'msg' : 'Invalid token.'});
-  }
+    if (!user) {
+      return res.status(400).json({'msg' : 'Invalid token.', is_success: false});
+    }
 
-  const isMatch = await bcryptjs.compare(old_password, user.password);
+    const isMatch = await bcryptjs.compare(old_password, user.password);
 
-  if (!isMatch) {
-    return res.status(400).json({ msg: "Incorrect password." });
-  }
+    if (!isMatch) {
+      return res.status(400).json({ msg: "Incorrect password." , is_success: false});
+    }
 
-  if (!password) {
-    return res.status(400).json({'msg' : 'New password is required.'});
-  }
+    if (!password) {
+      return res.status(400).json({'msg' : 'New password is required.', is_success: false});
+    }
 
-  if (!password_confirm) {
-    return res.status(400).json({'msg' : 'Password confirmation is required.'});
-  }
+    if (!password_confirm) {
+      return res.status(400).json({'msg' : 'Password confirmation is required.', is_success: false});
+    }
 
-  if (password.length < 6) {
-    return res.status(400).json({'msg' : 'Password should be minimum of 6 characters.'});
-  }
+    if (password.length < 6) {
+      return res.status(400).json({'msg' : 'Password should be minimum of 6 characters.', is_success: false});
+    }
 
-  if (password_confirm.length < 6) {
-    return res.status(400).json({'msg' : 'Password confirmation should be minimum of 6 characters.'});
-  }
+    if (password_confirm.length < 6) {
+      return res.status(400).json({'msg' : 'Password confirmation should be minimum of 6 characters.', is_success: false});
+    }
 
-  if (password != password_confirm) {
-    return res.status(400).json({'msg' : 'Password did not match.'});  
-  }
+    if (password != password_confirm) {
+      return res.status(400).json({'msg' : 'Password did not match.', is_success: false});  
+    }
 
-  try {
+    try {
 
-      user.security_code = '';
-      const hashedPassword = await bcryptjs.hash(password, 8);
-      user.password = hashedPassword;
-      await user.save();
+        user.security_code = '';
+        const hashedPassword = await bcryptjs.hash(password, 8);
+        user.password = hashedPassword;
+        await user.save();
 
-      res.json('Password has been successulfy update. You can now login using the new password.');
-      
-  } catch (e: any) {
-    res.status(500).json({ error: e.message });
-  }
+        res.json({msg: 'Password has been successulfy update. You can now login using the new password.', is_success: false});
+        
+    } catch (e: any) {
+      res.status(500).json({ error: e.message , is_success: false });
+    }
 });
 
 
