@@ -272,7 +272,7 @@ router.post('/update-password', authenticateToken, async function(req: Request, 
     const isMatch = await bcryptjs.compare(old_password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ msg: "Incorrect password." , is_success: false});
+      return res.status(400).json({ msg: "Incorrect old password." , is_success: false});
     }
 
     if (!password) {
@@ -302,7 +302,7 @@ router.post('/update-password', authenticateToken, async function(req: Request, 
         user.password = hashedPassword;
         await user.save();
 
-        res.json({msg: 'Password has been successulfy update. You can now login using the new password.', is_success: false});
+        res.json({msg: 'Password has been successulfy updated. You can now login using the new password.', is_success: true});
         
     } catch (e: any) {
       res.status(500).json({ error: e.message , is_success: false });
