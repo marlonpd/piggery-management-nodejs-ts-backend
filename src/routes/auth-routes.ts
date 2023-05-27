@@ -157,31 +157,31 @@ router.post('/request-update-password', async function(req: Request, res: Respon
   const password_confirm = req.body.password_confirm;
 
   if (!security_code) {
-    res.status(400).json({'msg' : 'Security code is required.', is_success: false});
+    return res.status(400).json({'msg' : 'Security code is required.', is_success: false});
   }
 
   if (!email) {
-    res.status(400).json({'msg' : 'Email is required.', is_success: false});
+    return res.status(400).json({'msg' : 'Email is required.', is_success: false});
   }
 
   if (!password) {
-    res.status(400).json({'msg' : 'Password is required.', is_success: false});
+    return res.status(400).json({'msg' : 'Password is required.', is_success: false});
   }
 
   if (!password_confirm) {
-    res.status(400).json({'msg' : 'Password confirmation is required.', is_success: false});
+    return res.status(400).json({'msg' : 'Password confirmation is required.', is_success: false});
   }
 
   if (password.length < 6) {
-      res.status(400).json({'msg' : 'Password should be minimum of 6 characters.', is_success: false});
+    return  res.status(400).json({'msg' : 'Password should be minimum of 6 characters.', is_success: false});
   }
 
   if (password_confirm.length < 6) {
-    res.status(400).json({'msg' : 'Password confirmation should be minimum of 6 characters.', is_success: false});
+    return res.status(400).json({'msg' : 'Password confirmation should be minimum of 6 characters.', is_success: false});
   }
 
   if (password != password_confirm) {
-    res.status(400).json({'msg' : 'Password did not match.', is_success: false});  
+    return res.status(400).json({'msg' : 'Password did not match.', is_success: false});  
   }
 
   const user = await User.findOne({ email });
@@ -192,8 +192,11 @@ router.post('/request-update-password', async function(req: Request, res: Respon
       .json({ msg: "User with this email does not exist!", is_success: false });
   }
 
+  console.log(user.security_code);
+  console.log(security_code);
+
   if (user.security_code != security_code) {
-    res.status(400).json({'msg' : 'Security code is invalid.', is_success: false});    
+    return res.status(400).json({'msg' : 'Security code is invalid.', is_success: false});    
   }
 
   try {
@@ -203,10 +206,10 @@ router.post('/request-update-password', async function(req: Request, res: Respon
       user.password = hashedPassword;
       await user.save();
 
-      res.json({msg:'Password has been successulfy update. You can now login using the new password.', is_success: true});
+      return res.json({msg:'Password has been successulfy update. You can now login using the new password.', is_success: true});
       
   } catch (e: any) {
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 });
 

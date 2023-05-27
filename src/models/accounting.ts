@@ -22,3 +22,10 @@ const AccountingSchema: Schema = new Schema({
 });
 
 export default mongoose.model<IAccounting>('Accounting', AccountingSchema);
+
+
+
+// raise_accounting
+
+// raise_id 
+// accounting_id
