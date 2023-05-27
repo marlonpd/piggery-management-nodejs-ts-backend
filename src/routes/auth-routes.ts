@@ -29,9 +29,9 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
       name,
     });
     user = await user.save();
-    res.json(user);
+    return res.json(user);
   } catch (e: any) {
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 });
 
@@ -57,9 +57,9 @@ router.post("/signin", async (req: Request, res: Response, next: NextFunction) =
     const secret = process.env.JWT_SECRET ?? '';  
     console.log(secret)
     const token = jwt.sign({ id: user._id }, secret);
-    res.json({ token, ...user?._doc });
+    return res.json({ token, ...user?._doc });
   } catch (e: any) {
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 });
 
@@ -76,9 +76,9 @@ router.post("/tokenIsValid", async (req, res) => {
 
     const user = await User.findById(verified.id);
     if (!user) return res.json(false);
-    res.json(true);
+    return res.json(true);
   } catch (e: any) {
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 });
 
@@ -93,9 +93,9 @@ router.post("/me", authenticateToken ,async (req, res) => {
       ...user?._doc
     }
 
-    res.json(response);
+    return res.json(response);
   } catch (e: any) {
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 });
 
@@ -104,7 +104,7 @@ router.post('/request-change-password', async function(req: Request, res: Respon
   const email = req.body.email;
 
   if (!email) {
-    res.status(400).json({'msg' : 'Email is required.', 'is_sent': false });
+    return res.status(400).json({'msg' : 'Email is required.', 'is_sent': false });
   }
 
   const user = await User.findOne({ email });
@@ -138,14 +138,14 @@ router.post('/request-change-password', async function(req: Request, res: Respon
 
       transporter.sendMail(mailOptions, function(e, info){
         if (e) {
-          res.status(500).json({ error: e.message, 'is_sent': false  });
+          return res.status(500).json({ error: e.message, 'is_sent': false  });
         } else {
-          res.json({'is_sent': true , 'msg': `A security code has been sent to ${email}.`});
+          return res.json({'is_sent': true , 'msg': `A security code has been sent to ${email}.`});
         }
       });
 
   } catch (e: any) {
-    res.status(500).json({ error: e.message , 'is_sent': false  });
+    return  res.status(500).json({ error: e.message , 'is_sent': false  });
   }
 });
 //change password
@@ -223,11 +223,11 @@ router.post('/confirm-security-code', async function(req: Request, res: Response
       const security_code = req.body.security_code;
 
       if (!security_code) {
-        res.status(400).json({'msg' : 'Security code is required.', is_correct:false});
+        return  res.status(400).json({'msg' : 'Security code is required.', is_correct:false});
       }
 
       if (!email) {
-        res.status(400).json({'msg' : 'Email is required.', is_correct:false});
+        return  res.status(400).json({'msg' : 'Email is required.', is_correct:false});
       }
 
       const user = await User.findOne({ email });
@@ -239,13 +239,13 @@ router.post('/confirm-security-code', async function(req: Request, res: Response
       }
 
       if (user.security_code != security_code) {
-        res.status(400).json({'msg' : 'Security code is invalid.', is_correct:false});    
+        return res.status(400).json({'msg' : 'Security code is invalid.', is_correct:false});    
       }
 
-      res.json({msg: 'Security code is correct, you can now change your password.', is_correct: true});
+      return res.json({msg: 'Security code is correct, you can now change your password.', is_correct: true});
       
   } catch (e: any) {
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 });
 
@@ -256,7 +256,7 @@ router.post('/update-password', authenticateToken, async function(req: Request, 
     const password_confirm = req.body.password_confirm;
 
     if (!old_password) {
-      res.status(400).json({'msg' : 'Old password is required.', is_success: false});
+      return res.status(400).json({'msg' : 'Old password is required.', is_success: false});
     }
 
     const secret = JWT_SECRET;  
@@ -264,7 +264,7 @@ router.post('/update-password', authenticateToken, async function(req: Request, 
 
     const verified  = jwt.verify(token, secret) as JwtPayload;
 
-    if (!verified) return  res.status(400).json({'msg' : 'Invalid token.', is_success: false});
+    if (!verified) return res.status(400).json({'msg' : 'Invalid token.', is_success: false});
 
     const user = await User.findById(verified.id);
 
@@ -305,10 +305,10 @@ router.post('/update-password', authenticateToken, async function(req: Request, 
         user.password = hashedPassword;
         await user.save();
 
-        res.json({msg: 'Password has been successulfy updated. You can now login using the new password.', is_success: true});
+        return res.json({msg: 'Password has been successulfy updated. You can now login using the new password.', is_success: true});
         
     } catch (e: any) {
-      res.status(500).json({ error: e.message , is_success: false });
+      return res.status(500).json({ error: e.message , is_success: false });
     }
 });
 

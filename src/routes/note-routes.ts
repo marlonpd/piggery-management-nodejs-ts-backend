@@ -11,25 +11,25 @@ router.get('',  authenticateToken, async function (req: Request, res: Response, 
   const raise_id =  req.query.raise_id?.toString();
 
   if (!raise_id) {
-    res.status(400).json({'msg': 'Raise id is required.'});
+    return res.status(400).json({'msg': 'Raise id is required.'});
     return;
   }
 
   if (!Types.ObjectId.isValid(raise_id)) {
-    res.status(400).json({'msg': 'Invalid raise id.'});
+    return res.status(400).json({'msg': 'Invalid raise id.'});
     return;
   }
 
   let raise = await Raise.findOne({_id: raise_id});
 
   if (!raise) {
-    res.status(400).json({'msg': 'Raise id not found.'});
+    return res.status(400).json({'msg': 'Raise id not found.'});
     return;
   }
 
   const entries =await  Note.find({raise_id}); 
     
-  res.json(entries);
+  return res.json(entries);
 });
 
 router.post('/save',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
@@ -38,29 +38,29 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
     const description = req.body.description;
 
     if (!raise_id) {
-      res.status(400).json({'msg': 'Raise id is required'});
+      return res.status(400).json({'msg': 'Raise id is required'});
       return;
     }
 
     if (!Types.ObjectId.isValid(raise_id)) {
-      res.status(400).json({'msg': 'Invalid raise id.'});
+      return res.status(400).json({'msg': 'Invalid raise id.'});
       return;
     }  
 
     let raise = await Raise.findOne({_id: raise_id});
 
     if (!raise) {
-      res.status(400).json({'msg': 'Raise id not found.'});
+      return res.status(400).json({'msg': 'Raise id not found.'});
       return;
     }
 
     if (!title) {
-      res.status(400).json({'msg': 'Title is required'});
+      return res.status(400).json({'msg': 'Title is required'});
       return;
     }
 
     if (!description) {
-      res.status(400).json({'msg': 'Description is required'});
+      return res.status(400).json({'msg': 'Description is required'});
       return;
     }
 
@@ -74,7 +74,7 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
     
     await entry.save();
 
-    res.json(entry);
+    return res.json(entry);
 });
 
 router.post('/update',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
@@ -85,26 +85,26 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
   console.log(req.body);
 
   if (!title) {
-    res.status(400).json({'msg': 'Title is required.'});
+    return res.status(400).json({'msg': 'Title is required.'});
     return;
   }
 
   if (!description) {
-    res.status(400).json({'msg': 'Description is required.'});
+    return res.status(400).json({'msg': 'Description is required.'});
     return;
   }
 
   const note_id = req.body.id;
 
   if (!Types.ObjectId.isValid(note_id)) {
-    res.status(400).json({'msg': 'Invalid note id.'});
+    return res.status(400).json({'msg': 'Invalid note id.'});
     return;
   }  
 
   let note = await Note.findOne({_id: note_id});
 
   if (!note) {
-    res.status(400).json({'msg': 'Note id not found.'});
+    return res.status(400).json({'msg': 'Note id not found.'});
     return;
   }
 
@@ -119,7 +119,7 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
     returnOriginal: false
   }); 
   
-  res.json(entry);
+  return res.json(entry);
 });
 
 router.post('/delete',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
@@ -127,20 +127,20 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
   const note_id = req.body.id;
 
   if (!Types.ObjectId.isValid(note_id)) {
-    res.status(400).json({'msg': 'Invalid note id.'});
+    return res.status(400).json({'msg': 'Invalid note id.'});
     return;
   }  
 
   let note = await Note.findOne({_id: note_id});
 
   if (!note) {
-    res.status(400).json({'msg': 'Note id not found.'});
+    return res.status(400).json({'msg': 'Note id not found.'});
     return;
   }
    
   const deleted =await Note.deleteOne({_id: note_id});
 
-  res.json(deleted);
+  return res.json(deleted);
 });
 
 
