@@ -4,6 +4,7 @@ export interface IFeedingGuide extends Document {
   raise_id: Number;
   from_date: Schema.Types.Date;
   to_date: Schema.Types.Date;
+  feeding_period:  Schema.Types.String,
   feed_type: String;
   feed_name: String;
   grams: Number;
@@ -16,6 +17,7 @@ const FeedingGuideSchema: Schema = new Schema({
       type: mongoose.Schema.Types.ObjectId, 
       required: true
     },
+    feeding_period: { type: Schema.Types.String, required: true },
     from_date: { type: Schema.Types.Date, required: true },
     to_date: { type: Schema.Types.Date, required: true },
     feed_type: { type: Schema.Types.String, required: true },
