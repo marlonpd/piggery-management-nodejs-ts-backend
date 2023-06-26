@@ -272,7 +272,7 @@ router.get(
       console.log(await total_expenses.exec());
 
       const te = await total_expenses.exec();
-      const expenses_sum = te[0].total;
+      const expenses_sum = te[0] ? te[0]?.total : 0;
 
       const total_sales = Accounting.aggregate([
         {
@@ -294,7 +294,7 @@ router.get(
       ]);
 
       const ts = await total_sales.exec();
-      const sales_sum = ts[0].sum;
+      const sales_sum = ts[0] ? ts[0].sum : 0;
       const net_income = sales_sum - expenses_sum;
 
       const payload = {

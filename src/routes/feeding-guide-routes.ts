@@ -5,6 +5,7 @@ import Raise from "../models/raise";
 import { EEntryType } from "../utilities/constants";
 import { Types } from "mongoose";
 import FeedingGuideHandler from '../handlers/feeding_guide_handler';
+import FeedingGuide from '../models/feeding_guide';
 
 const router: Router = Router();
 
@@ -53,10 +54,16 @@ router.post(
       }
 
       const payload = {
-
+        raise_id: req.body.raise_id,
+        from_date: req.body.from_date,
+        to_date:  req.body.to_date,
+        feeding_period: req.body.feeding_period,
+        feed_type: req.body.feed_type,
+        feed_name: req.body.feed_name,
+        grams: req.body.grams,
       };
-      
-      let entry = new Accounting(payload);
+
+      let entry = new FeedingGuide(payload);
 
       await entry.save();
 
