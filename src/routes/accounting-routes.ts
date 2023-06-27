@@ -220,12 +220,10 @@ router.get(
 
       if (!raise_id) {
         return res.status(400).json({ msg: "Raise id is required." });
-        return;
       }
 
       if (!Types.ObjectId.isValid(raise_id)) {
         return res.status(400).json({ msg: "Invalid raise id." });
-        return;
       }
 
       // const total_expenses = Accounting.aggregate([{
@@ -262,28 +260,29 @@ router.get(
         {
           $group: {
             _id: "expenses",
-            total: {
-              $sum: "$amount",
+            sum: {
+              $sum: {
+                $toInt: "$amount",
+              },
             },
           },
         },
       ]);
 
-      console.log(await total_expenses.exec());
 
       const te = await total_expenses.exec();
-      const expenses_sum = te[0] ? te[0]?.total : 0;
+      const expenses_sum = te[0] ? te[0]?.sum : 0;
 
       const total_sales = Accounting.aggregate([
         {
           $match: {
-            entry_type: "income",
+            entry_type: "sales",
             raise_id: new Types.ObjectId(raise_id),
           },
         },
         {
           $group: {
-            _id: "income",
+            _id: "sales",
             sum: {
               $sum: {
                 $toInt: "$amount",
