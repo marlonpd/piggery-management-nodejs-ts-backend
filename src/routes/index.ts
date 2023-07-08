@@ -6,6 +6,7 @@ import { AccountingRoutes } from './accounting-routes';
 import { NoteRoutes } from './note-routes';
 import { EventRoutes } from './event-routes';
 import { ExpenseRoutes } from './expense-routes';
+import { SowHistoryRoutes } from './sow-history-routes';
 
 const router: Router = Router();
 
@@ -16,5 +17,6 @@ router.use('/accounting', AccountingRoutes);
 router.use('/note', NoteRoutes);
 router.use('/event', EventRoutes);
 router.use('/expense', ExpenseRoutes);
+router.use('/sow-history', SowHistoryRoutes);
 
 export const MainRouter: Router = router;

@@ -29,6 +29,13 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
         const raise_name = req.body.name;
         const hog_pen = req.body.hog_pen;
         const head_count = Number(req.body.head_count);
+        const breed = req.body.breed;
+        const birth_date = req.body.birth_date;
+        const dam_no = req.body.dam_no;
+        const sire_no = req.body.sire_no;
+        const ave_size_of_litter_dam = req.body.ave_size_of_litter_dam;
+        const teats_count = req.body.teats_count;
+        const rev_to = req.body.rev_to;
 
         if (!raise_type) {
           return res.status(400).json({'msg' : 'Raise type is required'});
@@ -49,9 +56,14 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
         const payload = {
           raise_type : raise_type,
           name : raise_name,
-          head_count: head_count,
+          breed: breed,
+          birth_date: birth_date,
+          dam_no: dam_no,
           hog_pen: hog_pen,
-          user : _id,
+          sire_no : sire_no,
+          ave_size_of_litter_dam : ave_size_of_litter_dam,
+          teats_count : teats_count,
+          rev_to: rev_to,
         };
 
         let raise = new Raise(payload); 
@@ -95,6 +107,13 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
   const raise_id = req.body.id;
   const hog_pen = req.body.hog_pen;
   const head_count = Number(req.body.head_count);
+  const breed = req.body.breed;
+  const birth_date = req.body.birth_date;
+  const dam_no = req.body.dam_no;
+  const sire_no = req.body.sire_no;
+  const ave_size_of_litter_dam = req.body.ave_size_of_litter_dam;
+  const teats_count = req.body.teats_count;
+  const rev_to = req.body.rev_to;
 
   const filter = { _id  : raise_id};
 
@@ -117,6 +136,13 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
     name,
     head_count,
     hog_pen,
+    breed: breed,
+    birth_date: birth_date,
+    dam_no: dam_no,
+    sire_no : sire_no,
+    ave_size_of_litter_dam : ave_size_of_litter_dam,
+    teats_count : teats_count,
+    rev_to: rev_to,
   };
 
   const raise = await Raise.findOneAndUpdate(filter, update, {
