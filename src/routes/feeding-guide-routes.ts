@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { authenticateToken } from "../utilities/authentication";
-import Accounting from "../models/accounting";
 import Raise from "../models/raise";
-import { EEntryType } from "../utilities/constants";
 import { Types } from "mongoose";
 import FeedingGuideHandler from '../handlers/feeding_guide_handler';
 import FeedingGuide from '../models/feeding_guide';
@@ -30,7 +28,7 @@ router.get(
         return res.status(400).json({ msg: "Raise id not found." });
       }
 
-      const entries = await Accounting.find({ raise_id });
+      const entries = await FeedingGuide.find({ raise_id });
 
       return res.json(entries);
     } catch (e: any) {
@@ -79,58 +77,38 @@ router.post(
   authenticateToken,
   async function (req: Request, res: Response, next: NextFunction) {
     try {
-      const accounting_id = req.body.id;
+      const feeding_guide_id = req.body.id;
 
-      if (!accounting_id) {
-        return res.status(400).json({ msg: "Accounting id is required." });
+      if (!feeding_guide_id) {
+        return res.status(400).json({ msg: "Feeding guide id is required." });
         return;
       }
 
-      if (!Types.ObjectId.isValid(accounting_id)) {
-        return res.status(400).json({ msg: "Invalid accounting id." });
+      if (!Types.ObjectId.isValid(feeding_guide_id)) {
+        return res.status(400).json({ msg: "Invalid feeding guide id." });
         return;
       }
 
-      const filter = { _id: accounting_id };
+      const filter = { _id: feeding_guide_id };
 
-      const description = req.body.description;
+      const feedingGuideHandler = new FeedingGuideHandler();
+      const validator = feedingGuideHandler.validateSaveRequest(req, res);
 
-      if (!description) {
-        return res.status(400).json({ msg: "Description id is required." });
-        return;
-      }
-
-      const entry_type = req.body.entry_type;
-
-      if (!entry_type) {
-        return res.status(400).json({ msg: "Entry type id is required." });
-        return;
-      }
-
-      if (!(entry_type in EEntryType)) {
-        return res.status(400).json({ msg: "Invalid entry type." });
-        return;
-      }
-
-      const amount = Number(req.body.amount);
-
-      if (!amount) {
-        return res.status(400).json({ msg: "Amount is required." });
-        return;
-      }
-
-      if (isNaN(amount)) {
-        return res.status(400).json({ msg: "Invalid amount." });
-        return;
+      if (!validator.validate()) {
+        return res.status(400).json({ msg: validator.errors().first() });
       }
 
       const update = {
-        description: description,
-        entry_type: entry_type,
-        amount: amount,
+        raise_id: req.body.raise_id,
+        from_date: req.body.from_date,
+        to_date: req.body.to_date,
+        feeding_period: req.body.feeding_period,
+        feed_type: req.body.feed_type,
+        feed_name: req.body.feed_name,
+        grams: req.body.grams,
       };
 
-      const entry = await Accounting.findOneAndUpdate(filter, update, {
+      const entry = await FeedingGuide.findOneAndUpdate(filter, update, {
         returnOriginal: false,
       });
 
@@ -146,25 +124,25 @@ router.post(
   authenticateToken,
   async function (req: Request, res: Response, next: NextFunction) {
     try {
-      const accounting_id = req.body.id;
+      const feeding_guide_id = req.body.id;
 
-      if (!accounting_id) {
-        return res.status(400).json({ msg: "Accounting id is required." });
+      if (!feeding_guide_id) {
+        return res.status(400).json({ msg: "Feeding guide id is required." });
         return;
       }
 
-      if (!Types.ObjectId.isValid(accounting_id)) {
-        return res.status(400).json({ msg: "Invalid accounting id." });
+      if (!Types.ObjectId.isValid(feeding_guide_id)) {
+        return res.status(400).json({ msg: "Invalid feeding guide id." });
         return;
       }
 
-      let accounting = await Accounting.findOne({ _id: accounting_id });
+      let feedingGuide = await FeedingGuide.findOne({ _id: feeding_guide_id });
 
-      if (!accounting) {
-        return res.status(400).json({ msg: "Accounting id not found." });
+      if (!feedingGuide) {
+        return res.status(400).json({ msg: "Feeding guide id not found." });
       }
 
-      const deleted = await Accounting.deleteOne({ _id: accounting_id });
+      const deleted = await FeedingGuide.deleteOne({ _id: feeding_guide_id });
 
       return res.json(deleted);
     } catch (e: any) {
@@ -190,80 +168,22 @@ router.get(
         return;
       }
 
-      // const total_expenses = Accounting.aggregate([{
-      //     $match: {
-      //       entry_type: 'expenses',
-      //       raise_id: new Types.ObjectId(raise_id),
-      //     }
-      //   },
-      //   {
-      //     $group: {
-      //       _id: 'expenses',
-      //       sum: {
-      //         $sum: {
-      //           "$toInt": "$amount"
-      //         }
-      //       }
-      //     }
-      //   },
-      // ]);
-
-      const total_expenses = Accounting.aggregate([
+      const summaries = await FeedingGuide.aggregate([
         {
           $match: {
-            entry_type: "expenses",
-            raise_id: new Types.ObjectId(raise_id),
-          },
-        },
-        {
-          $project: {
-            _id: 0,
-            amount: 1,
-          },
-        },
-        {
-          $group: {
-            _id: "expenses",
-            total: {
-              $sum: "$amount",
-            },
-          },
-        },
-      ]);
-
-      console.log(await total_expenses.exec());
-
-      const te = await total_expenses.exec();
-      const expenses_sum = te[0].total;
-
-      const total_sales = Accounting.aggregate([
-        {
-          $match: {
-            entry_type: "income",
             raise_id: new Types.ObjectId(raise_id),
           },
         },
         {
           $group: {
-            _id: "income",
-            sum: {
-              $sum: {
-                $toInt: "$amount",
-              },
-            },
+            _id: null,
+            total_grams: { $sum: '$grams' },
+            entry_count: { $sum: 1 },
           },
         },
       ]);
 
-      const ts = await total_sales.exec();
-      const sales_sum = ts[0].sum;
-      const net_income = sales_sum - expenses_sum;
-
-      const payload = {
-        expenses_sum,
-        sales_sum,
-        net_income,
-      };
+      const payload = summaries[0] || { total_grams: 0, entry_count: 0 };
 
       return res.json(payload);
     } catch (e: any) {
@@ -272,4 +192,4 @@ router.get(
   }
 );
 
-export const ExpenseRoutes: Router = router;
+export const FeedingGuideRoutes: Router = router;

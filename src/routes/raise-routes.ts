@@ -3,7 +3,6 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { authenticateToken } from '../utilities/authentication';
 import Raise from '../models/raise';
 import Livestock from '../models/livestock';
-import { conn } from '../utilities/connection';
 import { ERaiseType } from '../utilities/constants';
 const router: Router = Router();
 
@@ -18,13 +17,8 @@ router.get('',  authenticateToken, async function (req: Request, res: Response, 
 });
 
 router.post('/save',  authenticateToken, async function (req: Request, res: Response, next: NextFunction) {
-
-    const session = await conn.startSession();
-    
     try {
-        session.startTransaction();
-
-        const _id =  req.user?.id;
+        const user_id =  req.user?.id;
         const raise_type = req.body.raise_type;
         const raise_name = req.body.name;
         const hog_pen = req.body.hog_pen;
@@ -64,13 +58,14 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
           ave_size_of_litter_dam : ave_size_of_litter_dam,
           teats_count : teats_count,
           rev_to: rev_to,
+          user: user_id,
         };
 
         let raise = new Raise(payload); 
         await raise.save();
 
         if (raise_type === ERaiseType.fattener || raise_type === ERaiseType.weaner) {
-          for (let i = 0; i < head_count; i++ ) {
+          for (let i = 1; i <= head_count; i++ ) {
             const lss = new Livestock({
               name : raise_type + `(${i})`,
               raise_id : raise._id,
@@ -89,14 +84,12 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
           await lss.save();
         }
 
-        await session.commitTransaction();
-
         return res.json(raise);
 
     } catch (e :any) {
 
       console.log(e);
-      await session.abortTransaction();
+      return res.status(500).json({msg: e?.message || 'Failed to save raise.'});
     }
     
 });
@@ -115,7 +108,7 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
   const teats_count = req.body.teats_count;
   const rev_to = req.body.rev_to;
 
-  const filter = { _id  : raise_id};
+  const filter = { _id  : raise_id, user: req.user?.id};
 
   if (!raise_id) {
     return res.status(400).json({'msg':'Raise id is required'});
@@ -161,7 +154,7 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
     return;
   }
 
-  let raise = await Raise.findOne({_id: raise_id});
+  let raise = await Raise.findOne({_id: raise_id, user: req.user?.id});
 
   if (!raise) {
     return res.status(400).json({'msg':'Raise id not found.'});

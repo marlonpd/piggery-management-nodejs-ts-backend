@@ -6,17 +6,25 @@ import { AccountingRoutes } from './accounting-routes';
 import { NoteRoutes } from './note-routes';
 import { EventRoutes } from './event-routes';
 import { ExpenseRoutes } from './expense-routes';
+import { FeedingGuideRoutes } from './feeding-guide-routes';
 import { SowHistoryRoutes } from './sow-history-routes';
+import { DashboardRoutes } from './dashboard-routes';
+import { FeedInventoryRoutes } from './feed-inventory-routes';
+import { ReminderRoutes } from './reminder-routes';
 
 const router: Router = Router();
 
 router.use('/auth', AuthRoutes);
+router.use('/dashboard', DashboardRoutes);
 router.use('/livestocks', LivestockRoutes);
 router.use('/raise', RaiseRoutes);
 router.use('/accounting', AccountingRoutes);
 router.use('/note', NoteRoutes);
 router.use('/event', EventRoutes);
 router.use('/expense', ExpenseRoutes);
+router.use('/feeding-guide', FeedingGuideRoutes);
 router.use('/sow-history', SowHistoryRoutes);
+router.use('/feed-inventory', FeedInventoryRoutes);
+router.use('/reminder', ReminderRoutes);
 
 export const MainRouter: Router = router;

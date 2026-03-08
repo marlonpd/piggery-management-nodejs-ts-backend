@@ -22,5 +22,5 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export type TEntryType = "income" | "expenses";
+export type TEntryType = "income" | "sales" | "expenses";
 export type TRaiseType = "weaner" | "boar" | "sow" | 'fattener';

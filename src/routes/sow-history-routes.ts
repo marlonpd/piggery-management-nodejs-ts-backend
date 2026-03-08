@@ -192,7 +192,7 @@ router.post('/delete',  authenticateToken, async function (req: Request, res: Re
     return res.status(400).json({'msg': 'Show history id not found.'});
   }
    
-  const deleted = await SowHistory.deleteOne({_id: show_history});
+  const deleted = await SowHistory.deleteOne({_id: sow_history_id});
 
   return res.json(deleted);
 });

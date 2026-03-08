@@ -42,7 +42,7 @@ router.post('/save',  authenticateToken, async function (req: Request, res: Resp
       name : name,
       raise_id : raise_id,
       weight : req.body?.weight,
-      birth_date : req.body?.weight,
+      birth_date : req.body?.birth_date,
     };
 
     let raise = new Livestock(payload); 
@@ -71,7 +71,7 @@ router.post('/update',  authenticateToken, async function (req: Request, res: Re
     
     const update = {
       name : name,
-      birdate : req.body.birth_date,
+      birth_date : req.body.birth_date,
       weight : req.body.weight,
     };
 
