@@ -4,6 +4,7 @@ export interface IUser extends Document {
   email: string;
   name: string;
   password: string;
+  role: 'owner' | 'manager' | 'staff';
   security_code: string;
   _doc: Object
 }
@@ -24,6 +25,7 @@ const UserSchema: Schema = new Schema({
   },
   name: { type: Schema.Types.String, required: true },
   password: { type: Schema.Types.String, required: true },
+  role: { type: Schema.Types.String, required: true, default: 'owner' },
   security_code: { type: Schema.Types.String, required: false },
 },
 {

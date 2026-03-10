@@ -1,6 +1,7 @@
 
 import { Request, NextFunction, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import User from '../models/user';
 
 export const  getTokenFromHeader = (req: Request): string => {
 
@@ -45,13 +46,20 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 
   const secret = process.env.JWT_SECRET ?? '';
 
-  jwt.verify(token, secret , (err: any, user: any) => {
-    console.log(err)
-    if (err) return res.sendStatus(403)
-    user.token = token;
-    req.user = user
-    next()
-  })
+  try {
+    const payload = jwt.verify(token, secret) as jwt.JwtPayload;
+    const user = await User.findById(payload.id);
+
+    if (!user) {
+      return res.sendStatus(403);
+    }
+
+    req.user = user;
+    return next();
+  } catch (err: any) {
+    console.log(err);
+    return res.sendStatus(403);
+  }
 }
 
 // const auth = {

@@ -13,6 +13,9 @@ const router: Router = Router();
 router.post("/signup", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, email, password } = req.body;
+    const role = req.body.role;
+    const allowedRoles = ['owner', 'manager', 'staff'];
+    const safeRole = allowedRoles.includes(role) ? role : 'owner';
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -27,6 +30,7 @@ router.post("/signup", async (req: Request, res: Response, next: NextFunction) =
       email,
       password: hashedPassword,
       name,
+      role: safeRole,
     });
     user = await user.save();
     return res.json(user);

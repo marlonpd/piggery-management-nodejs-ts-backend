@@ -11,11 +11,15 @@ import { SowHistoryRoutes } from './sow-history-routes';
 import { DashboardRoutes } from './dashboard-routes';
 import { FeedInventoryRoutes } from './feed-inventory-routes';
 import { ReminderRoutes } from './reminder-routes';
+import { AlertsRoutes } from './alerts-routes';
+import { ReportRoutes } from './report-routes';
 
 const router: Router = Router();
 
 router.use('/auth', AuthRoutes);
 router.use('/dashboard', DashboardRoutes);
+router.use('/alerts', AlertsRoutes);
+router.use('/report', ReportRoutes);
 router.use('/livestocks', LivestockRoutes);
 router.use('/raise', RaiseRoutes);
 router.use('/accounting', AccountingRoutes);

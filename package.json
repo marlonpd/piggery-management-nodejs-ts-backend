@@ -7,6 +7,7 @@
     "start": "npm run build && npm run serve",
     "serve": "node build/server.js",
     "build": "npm run build-ts",
+    "seed:dummy": "npm run build-ts && node -r dotenv/config build/scripts/seed-dummy.js",
     "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "watch-node": "nodemon -r dotenv/config build/server.js",
     "build-ts": "tsc",
